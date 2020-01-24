@@ -49,7 +49,7 @@ class RedisUtilTest {
     @Test
     void zsetGet() {
         List<String> res = redisUtil.zsetGet("test-zset");
-        for(int i = 0 ; i < res.size(); i++){
+        for (int i = 0; i < res.size(); i++) {
             System.out.println(res.get(i));
         }
     }
@@ -67,5 +67,15 @@ class RedisUtilTest {
         for (String re : res) {
             System.out.println(re);
         }
+    }
+
+    @Test
+    void listRAdd() {
+        redisUtil.listRAdd("test-list", "aaa", "bbb", "ccc");
+    }
+
+    @Test
+    void listGet() {
+        System.out.println(redisUtil.listGet("test-list"));
     }
 }

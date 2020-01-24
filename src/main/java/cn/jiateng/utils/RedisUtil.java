@@ -3,6 +3,7 @@ package cn.jiateng.utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +60,24 @@ public final class RedisUtil {
         Cursor<Object> cursor = this.redisTemplate.opsForSet().scan(key, scanOptions);
         while (cursor.hasNext()) {
             res.add((String) cursor.next());
+        }
+        return res;
+    }
+
+    public void listRAdd(String key, String... val) {
+        this.redisTemplate.opsForList().rightPushAll(key, val);
+    }
+
+    public void listLAdd(String key, String... val) {
+        this.redisTemplate.opsForList().leftPushAll(key, val);
+    }
+
+    public List<String> listGet(String key) {
+        List<String> res = new ArrayList<>();
+        long size = this.redisTemplate.opsForList().size(key);
+        List<Object> r = this.redisTemplate.opsForList().range(key, 0, size);
+        for (Object obj : r) {
+            res.add((String) obj);
         }
         return res;
     }
