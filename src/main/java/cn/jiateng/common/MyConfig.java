@@ -7,7 +7,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
-public class Config {
+public class MyConfig {
 
 
     @Bean

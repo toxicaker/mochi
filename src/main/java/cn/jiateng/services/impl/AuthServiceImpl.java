@@ -8,8 +8,6 @@ import cn.jiateng.utils.EncrypUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.util.List;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -23,8 +21,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean signup(User user, String confirmPassword) throws ServiceException {
-        List<User> existUser = userDao.findByUsername(user.username);
-        if (existUser.size() != 0) {
+        User existUser = userDao.findByUsername(user.username);
+        if (existUser != null) {
             throw new ServiceException("user " + user.id + " already exists");
         }
         if (!user.password.equals(confirmPassword)) {
@@ -42,14 +40,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User signin(String username, String password) throws ServiceException {
-        List<User> existUser = userDao.findByUsernameAndPassword(username, EncrypUtil.getMd5(password));
-        System.out.println("username = " + username + " password = " + EncrypUtil.getMd5(password));
-        if (existUser.size() == 0) {
+        User existUser = userDao.findByUsernameAndPassword(username, EncrypUtil.getMd5(password));
+        if (existUser == null) {
             throw new ServiceException("username or password is incorrect");
         }
-        User user = existUser.get(0);
-        user.lastLoginTime = System.currentTimeMillis();
-        userDao.save(user);
-        return user;
+        existUser.lastLoginTime = System.currentTimeMillis();
+        userDao.save(existUser);
+        return existUser;
     }
 }

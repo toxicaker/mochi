@@ -76,9 +76,16 @@ public final class RedisUtil {
         List<String> res = new ArrayList<>();
         long size = this.redisTemplate.opsForList().size(key);
         List<Object> r = this.redisTemplate.opsForList().range(key, 0, size);
+        if (r == null){
+            return res;
+        }
         for (Object obj : r) {
             res.add((String) obj);
         }
         return res;
+    }
+
+    public boolean removeKey(String key){
+        return this.redisTemplate.delete(key);
     }
 }
