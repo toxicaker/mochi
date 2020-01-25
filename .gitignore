@@ -1,4 +1,4 @@
 .idea/*
-mochi.iml
+*.iml
 .DS_Store
 target/*
