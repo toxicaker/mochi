@@ -64,6 +64,10 @@ public final class RedisUtil {
         return res;
     }
 
+    public void setRemove(String key, String... objs) {
+        redisTemplate.opsForSet().remove(key, (Object) objs);
+    }
+
     public void listRAdd(String key, String... val) {
         this.redisTemplate.opsForList().rightPushAll(key, val);
     }
@@ -76,7 +80,7 @@ public final class RedisUtil {
         List<String> res = new ArrayList<>();
         long size = this.redisTemplate.opsForList().size(key);
         List<Object> r = this.redisTemplate.opsForList().range(key, 0, size);
-        if (r == null){
+        if (r == null) {
             return res;
         }
         for (Object obj : r) {
@@ -85,7 +89,7 @@ public final class RedisUtil {
         return res;
     }
 
-    public boolean removeKey(String key){
+    public boolean removeKey(String key) {
         return this.redisTemplate.delete(key);
     }
 }

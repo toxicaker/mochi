@@ -10,6 +10,8 @@ public interface FriendRequestDao extends MongoRepository<FriendRequest, String>
 
     FriendRequest findByRequesterIdAndRequesteeId(String requesterId, String requesteeId);
 
-    List<FriendRequest> findAllByRequesterId(String requesterId);
+    List<FriendRequest> findAllByRequesterIdAndStatus(String requesterId, Integer status);
+
+    List<FriendRequest> findAllByRequesteeIdAndStatus(String requesteeId, Integer status);
 
 }

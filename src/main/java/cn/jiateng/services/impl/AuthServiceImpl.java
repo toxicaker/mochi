@@ -20,7 +20,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public boolean signup(User user, String confirmPassword) throws ServiceException {
+    public User signup(User user, String confirmPassword) throws ServiceException {
         User existUser = userDao.findByUsername(user.username);
         if (existUser != null) {
             throw new ServiceException("user " + user.id + " already exists");
@@ -35,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
         user.createTime = System.currentTimeMillis();
         user.lastLoginTime = System.currentTimeMillis();
         userDao.save(user);
-        return true;
+        return user;
     }
 
     @Override

@@ -13,12 +13,16 @@ public interface UserService {
 
     Set<String> listFriendIds(String userId);
 
-    boolean requestFriend(String requesterId, String requesteeId, String message) throws ServiceException;
+    void removeFriend(String userId, String friendId);
+
+    FriendRequest requestFriend(String requesterId, String requesteeId, String message) throws ServiceException;
 
     boolean acceptFriendRequest(String requesterId, String requesteeId) throws ServiceException;
 
     boolean declineFriendRequest(String requesterId, String reuqesteeId) throws ServiceException;
 
-    List<FriendRequest> listFriendRequests(String userId);
+    List<FriendRequest> listFriendRequests(String userId, boolean isRequester);
+
+    boolean doAddFriend(String userId, String friendId) throws ServiceException;
 
 }
