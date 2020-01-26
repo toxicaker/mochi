@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
 
     private final Gson gson;
 
+
     @Autowired
     public UserServiceImpl(UserDao userDao, RedisUtil redisUtil, Gson gson, FriendDao friendDao, FriendRequestDao friendRequestDao) {
         this.userDao = userDao;
@@ -36,6 +37,11 @@ public class UserServiceImpl implements UserService {
         this.gson = gson;
         this.friendDao = friendDao;
         this.friendRequestDao = friendRequestDao;
+    }
+
+    @Override
+    public User getUserById(String userId) {
+        return userDao.findById(userId).get();
     }
 
     @Override

@@ -7,10 +7,14 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.log4j.Logger;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 public class MochiMsgServer {
 
     final static Logger logger = Logger.getLogger(MochiMsgServer.class);
+
+    final static JedisPool pool = new JedisPool(new JedisPoolConfig(), Config.read("redis.host"));
 
     public static void main(String[] args) throws Exception {
         int port = Integer.parseInt(Config.read("server.port"));

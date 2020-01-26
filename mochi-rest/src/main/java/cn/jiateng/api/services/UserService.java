@@ -9,6 +9,8 @@ import java.util.Set;
 
 public interface UserService {
 
+    User getUserById(String userId);
+
     Set<User> listFriends(String userId);
 
     Set<String> listFriendIds(String userId);
