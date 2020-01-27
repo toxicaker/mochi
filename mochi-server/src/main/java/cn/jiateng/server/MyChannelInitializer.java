@@ -11,7 +11,9 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.util.concurrent.ImmediateEventExecutor;
 
 
+
 public class MyChannelInitializer extends ChannelInitializer<SocketChannel> {
+
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
