@@ -1,4 +1,4 @@
-package cn.jiateng.server.common;
+package cn.jiateng.server.utils;
 
 import java.net.URLDecoder;
 import java.util.HashMap;

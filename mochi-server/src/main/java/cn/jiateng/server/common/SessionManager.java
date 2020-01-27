@@ -25,6 +25,7 @@ public class SessionManager {
     }
 
     public Session getSession(String userId) {
+        if(userId == null) return null;
         return userIdMap.get(userId);
     }
 

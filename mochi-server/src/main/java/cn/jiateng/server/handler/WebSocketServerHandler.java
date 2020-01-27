@@ -1,6 +1,7 @@
 package cn.jiateng.server.handler;
 
 import cn.jiateng.server.common.*;
+import cn.jiateng.server.utils.UrlParser;
 import com.google.gson.Gson;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -12,6 +13,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.websocketx.*;
 import org.apache.log4j.Logger;
 
+import java.rmi.ServerException;
 import java.util.Map;
 
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
@@ -26,28 +28,30 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     private String wsUrl;
 
+    private Service service;
+
 
     public WebSocketServerHandler(SessionManager sessionManager, Gson gson) {
         this.sessionManager = sessionManager;
         this.gson = gson;
+        this.service = new Service(sessionManager, gson);
     }
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws ServiceException {
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws ServiceException, InterruptedException {
         if (msg instanceof FullHttpRequest) {
             handleHttpRequest(ctx, (FullHttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {
             handleWebSocketRequest(ctx, (WebSocketFrame) msg);
         } else {
-            logger.error("wrong request type, client = " + ctx.channel().remoteAddress().toString());
+            throw new ServiceException("wrong request type");
         }
     }
 
     private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) throws ServiceException {
         // handle request
         final String url = req.uri();
-        logger.info("recevied http request " + url + " from client " + ctx.channel().remoteAddress().toString());
         String[] paths = url.split("\\?");
         if (!"/mochi/ws".equals(paths[0])) {
             throw new ServiceException("wrong websocket request, wrong url");
@@ -65,12 +69,17 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                     .sendUnsupportedVersionResponse(ctx.channel());
         } else {
             ChannelFuture cf = handshaker.handshake(ctx.channel(), req);
+            // websocket has established
             cf.addListener((ChannelFutureListener) future -> {
-                logger.info("established websocket channel for client " + ctx.channel().remoteAddress().toString());
-                Map<String, Object> params = UrlParser.getParameters(url);
-                String userId = (String) params.get("userId");
-                sessionManager.addSession(new Session(userId, ctx.channel()));
-                logger.info("user " + userId + " now is online");
+                if (future.isSuccess()) {
+                    logger.info("established websocket channel for client " + ctx.channel().remoteAddress().toString());
+                    Map<String, Object> params = UrlParser.getParameters(url);
+                    String userId = (String) params.get("userId");
+                    sessionManager.addSession(new Session(userId, ctx.channel()));
+                    logger.info("user " + userId + " now is online");
+                } else {
+                    throw new ServerException("cannot establish websocket for client " + ctx.channel().remoteAddress().toString());
+                }
             });
         }
     }
@@ -83,8 +92,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         }
     }
 
-    private void handleWebSocketRequest(ChannelHandlerContext ctx, WebSocketFrame frame) {
-        logger.info("recevied websocket request from client " + ctx.channel().remoteAddress().toString());
+    private void handleWebSocketRequest(ChannelHandlerContext ctx, WebSocketFrame frame) throws ServiceException, InterruptedException {
         if (frame instanceof CloseWebSocketFrame) {
             handshaker.close(ctx.channel(),
                     (CloseWebSocketFrame) frame.retain());
@@ -100,8 +108,29 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                     "%s frame types not supported", frame.getClass().getName()));
         }
 
-        String request = ((TextWebSocketFrame) frame).text();
-        ctx.channel().write(new TextWebSocketFrame("received websocket request: " + request));
+        String message = ((TextWebSocketFrame) frame).text();
+        WSMsg wsMsg;
+        try {
+            wsMsg = gson.fromJson(message, WSMsg.class);
+        } catch (Exception e) {
+            throw new ServiceException("wrong message format: " + message);
+        }
+
+        //send an ack
+        wsMsg.setCreateTime(System.currentTimeMillis());
+        ChannelFuture cf = ctx.channel().writeAndFlush(new TextWebSocketFrame("success-" + wsMsg.getCreateTime()));
+
+
+        // message handling
+        switch (wsMsg.getType()) {
+            case WSMsg.MsgType.PRIVATE:
+                service.privateMessage(wsMsg, ctx);
+                break;
+            case WSMsg.MsgType.GROUP:
+                break;
+            default:
+                break;
+        }
     }
 
     @Override
