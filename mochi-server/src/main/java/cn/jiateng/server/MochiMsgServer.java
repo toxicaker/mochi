@@ -1,6 +1,5 @@
 package cn.jiateng.server;
 
-import cn.jiateng.server.common.Config;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -14,10 +13,10 @@ public class MochiMsgServer {
 
     final static Logger logger = Logger.getLogger(MochiMsgServer.class);
 
-    final static JedisPool pool = new JedisPool(new JedisPoolConfig(), Config.read("redis.host"));
+    final static JedisPool pool = new JedisPool(new JedisPoolConfig(), "localhost");
 
     public static void main(String[] args) throws Exception {
-        int port = Integer.parseInt(Config.read("server.port"));
+        int port = 12306;
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
 

@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,11 +29,9 @@ public class GlobalExceptionHandler {
         } else if (ex instanceof MissingServletRequestParameterException ||
                 ex instanceof MethodArgumentTypeMismatchException ||
                 ex instanceof HttpRequestMethodNotSupportedException) {
-            logger.warn("parameter error");
+            logger.warn("parameter error", ex);
         } else if (ex != null) {
-            StringWriter sw = new StringWriter();
-            ex.printStackTrace(new PrintWriter(sw));
-            logger.error("unknown error: " + sw.toString());
+            logger.error("unknown error", ex);
         }
     }
 }

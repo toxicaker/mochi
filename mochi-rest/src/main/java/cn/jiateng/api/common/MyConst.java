@@ -6,4 +6,7 @@ public class MyConst {
         return "mochi-userService-friends-" + userId;
     }
 
+    public static String redisKeySession(String userId) {
+        return "mochi-authService-session-" + userId;
+    }
 }

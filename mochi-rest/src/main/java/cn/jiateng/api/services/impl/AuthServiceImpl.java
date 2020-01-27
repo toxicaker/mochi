@@ -1,10 +1,12 @@
 package cn.jiateng.api.services.impl;
 
 import cn.jiateng.api.Model.User;
+import cn.jiateng.api.common.MyConst;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.dao.UserDao;
 import cn.jiateng.api.services.AuthService;
 import cn.jiateng.api.utils.EncrypUtil;
+import cn.jiateng.api.utils.RedisUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,9 +16,12 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserDao userDao;
 
+    private final RedisUtil redisUtil;
+
     @Autowired
-    public AuthServiceImpl(UserDao userDao) {
+    public AuthServiceImpl(UserDao userDao, RedisUtil redisUtil) {
         this.userDao = userDao;
+        this.redisUtil = redisUtil;
     }
 
     @Override
