@@ -40,8 +40,8 @@ public class AuthController {
 
     private Map<String, Object> packUserData(User user) {
         Map<String, Object> data = new HashMap<>();
-        data.put("id", user.id);
         data.put("username", user.username);
+        data.put("id", user.id);
         data.put("nickname", user.nickname);
         data.put("lastLogin", user.lastLoginTime);
         data.put("createTime", user.createTime);

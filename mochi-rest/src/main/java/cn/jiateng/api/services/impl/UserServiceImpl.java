@@ -1,19 +1,16 @@
 package cn.jiateng.api.services.impl;
 
-import cn.jiateng.api.Model.Friend;
-import cn.jiateng.api.Model.FriendRequest;
-import cn.jiateng.api.Model.User;
+import cn.jiateng.api.Model.*;
 import cn.jiateng.api.common.MyConst;
 import cn.jiateng.api.common.ServiceException;
-import cn.jiateng.api.dao.FriendDao;
-import cn.jiateng.api.dao.FriendRequestDao;
-import cn.jiateng.api.dao.UserDao;
+import cn.jiateng.api.dao.*;
 import cn.jiateng.api.services.UserService;
 import cn.jiateng.api.utils.RedisUtil;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.rmi.ServerException;
 import java.util.*;
 
 @Service
@@ -29,14 +26,20 @@ public class UserServiceImpl implements UserService {
 
     private final Gson gson;
 
+    private final GroupDao groupDao;
+
+    private final UserGroupDao userGroupDao;
+
 
     @Autowired
-    public UserServiceImpl(UserDao userDao, RedisUtil redisUtil, Gson gson, FriendDao friendDao, FriendRequestDao friendRequestDao) {
+    public UserServiceImpl(UserDao userDao, RedisUtil redisUtil, Gson gson, FriendDao friendDao, FriendRequestDao friendRequestDao, GroupDao groupDao, UserGroupDao userGroupDao) {
         this.userDao = userDao;
         this.redisUtil = redisUtil;
         this.gson = gson;
         this.friendDao = friendDao;
         this.friendRequestDao = friendRequestDao;
+        this.groupDao = groupDao;
+        this.userGroupDao = userGroupDao;
     }
 
     @Override
@@ -118,7 +121,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean declineFriendRequest(String requesterId, String requesteeId) throws ServiceException {
+    public void declineFriendRequest(String requesterId, String requesteeId) throws ServiceException {
         if (checkUser(requesteeId) || checkUser(requesteeId)) {
             throw new ServiceException("requester or requestee doesn't exist");
         }
@@ -128,11 +131,10 @@ public class UserServiceImpl implements UserService {
         }
         friendRequest.status = -1;
         friendRequestDao.save(friendRequest);
-        return true;
     }
 
     @Override
-    public boolean acceptFriendRequest(String requesterId, String requesteeId) throws ServiceException {
+    public void acceptFriendRequest(String requesterId, String requesteeId) throws ServiceException {
         Optional<User> requester = userDao.findById(requesterId);
         Optional<User> requestee = userDao.findById(requesteeId);
         if (!requester.isPresent() || !requestee.isPresent()) {
@@ -151,7 +153,6 @@ public class UserServiceImpl implements UserService {
         // update friend request
         friendRequest.status = 1;
         friendRequestDao.save(friendRequest);
-        return true;
     }
 
     @Override
@@ -162,7 +163,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean doAddFriend(String userId, String friendId) throws ServiceException {
+    public void doAddFriend(String userId, String friendId) throws ServiceException {
         Friend friend1 = friendDao.findByUserId1AndUserId2(userId, friendId);
         Friend friend2 = friendDao.findByUserId1AndUserId2(friendId, userId);
         if (friend1 != null || friend2 != null) {
@@ -179,7 +180,45 @@ public class UserServiceImpl implements UserService {
         friendDao.save(friend1);
         friendDao.save(friend2);
 
-        return true;
+    }
+
+    @Override
+    public void createGroup(String userId, String name, List<String> userIds) {
+        Group group = new Group();
+        group.name = name;
+        group.createTime = System.currentTimeMillis();
+        group = groupDao.save(group);
+        for (String uId : userIds) {
+            UserGroup userGroup = new UserGroup();
+            userGroup.userId = uId;
+            userGroup.groupId = group.id;
+            userGroup.createTime = System.currentTimeMillis();
+            userGroupDao.save(userGroup);
+        }
+    }
+
+    @Override
+    public UserGroup joinGroup(String userId, String groupId) throws ServerException {
+        Optional<Group> group = groupDao.findById(groupId);
+        if (!group.isPresent()) throw new ServerException("group " + groupId + " does not exist");
+        UserGroup userGroup = userGroupDao.findByUserIdAndGroupId(userId, groupId);
+        if(userGroup != null) throw new ServerException("user " + userId + " is already in the group " + groupId);
+        userGroup = new UserGroup();
+        userGroup.userId = userId;
+        userGroup.groupId = groupId;
+        userGroup.createTime = System.currentTimeMillis();
+        userGroupDao.save(userGroup);
+        return userGroup;
+    }
+
+    @Override
+    public UserGroup leaveGroup(String userId, String groupId) throws ServerException {
+        Optional<Group> group = groupDao.findById(groupId);
+        if (!group.isPresent()) throw new ServerException("group " + groupId + " does not exist");
+        UserGroup userGroup = userGroupDao.findByUserIdAndGroupId(userId, groupId);
+        if(userGroup == null) throw new ServerException("user " + userId + " not in the group " + groupId);
+        userGroupDao.delete(userGroup);
+        return userGroup;
     }
 
     private boolean checkUser(String userId) {
