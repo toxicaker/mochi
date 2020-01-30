@@ -18,6 +18,8 @@ public class User {
 
     public Long lastLoginTime;
 
+    public String token;
+
     public Long createTime;
 
     @Override

@@ -5,6 +5,7 @@ import cn.jiateng.api.common.JsonResp;
 import cn.jiateng.api.common.MyConfig;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.data.LoginForm;
+import cn.jiateng.api.data.SignupForm;
 import cn.jiateng.api.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,18 +21,18 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/sign-in")
     public JsonResp login(@RequestBody LoginForm loginForm) throws ServiceException {
         User user = authService.signin(loginForm.username, loginForm.password);
         return new JsonResp(user);
     }
 
-    @PostMapping("/signup")
-    public JsonResp signup(@RequestParam String username, @RequestParam String password1, @RequestParam String password2) throws ServiceException {
+    @PostMapping("/sign-up")
+    public JsonResp signup(@RequestBody SignupForm signupForm) throws ServiceException {
         User user = new User();
-        user.username = username;
-        user.password = password1;
-        user = authService.signup(user, password2);
+        user.username = signupForm.username;
+        user.password = signupForm.password1;
+        user = authService.signup(user, signupForm.password2);
         return new JsonResp(user);
     }
 

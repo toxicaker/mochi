@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public final class RedisUtil {
@@ -97,6 +98,11 @@ public final class RedisUtil {
     public void mapAdd(String key, Map<String, Object> data) {
         this.redisTemplate.opsForHash().putAll(key, data);
     }
+
+    public void setExpire(String key, long time){
+        this.redisTemplate.expire(key, time, TimeUnit.MILLISECONDS);
+    }
+
 
 
     public Object mapGet(String key, String mapKey) {

@@ -4,10 +4,7 @@ import cn.jiateng.api.Model.User;
 import cn.jiateng.api.common.JsonResp;
 import cn.jiateng.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,5 +25,25 @@ public class UserController {
         User user = userService.getUserById(userId);
         return new JsonResp(user);
     }
+
+//    @PostMapping("/friends/add/{userId}")
+//    public JsonResp sendFriendRequest(@PathVariable String userId, @RequestParam String friendId) {
+//
+//    }
+//
+//    @PostMapping("/friends/accept/{userId}/{requestId}")
+//    public JsonResp acceptFriendRequest() {
+//
+//    }
+//
+//    @DeleteMapping("/friends/requests/{userId}/{requestId}")
+//    public JsonResp declineFriendRequest() {
+//
+//    }
+//
+//    @DeleteMapping("/friends/{userId}")
+//    public JsonResp deleteFriend(@PathVariable String userId, @RequestParam String friendId) {
+//
+//    }
 
 }

@@ -31,15 +31,16 @@ public class Service {
     }
 
     public void login(String userId, ChannelHandlerContext ctx) {
-        sessionManager.addSession(new Session(userId, ctx.channel()));
-        logger.info("user " + userId + " now is online");
-        Map<String, String> data = new HashMap<>();
-        data.put("userId", userId);
-        data.put("sessionId", ctx.channel().id().asLongText());
-        RedisUtil.jedis.hmset(MyConst.redisKeySession(userId), data);
+        if (!RedisUtil.jedis.exists(MyConst.redisKeySession(userId))) {
+            logger.info("user " + userId + " does not have session! login failed");
+            ctx.channel().close();
+        } else {
+            sessionManager.addSession(new Session(userId, ctx.channel()));
+            RedisUtil.jedis.hset(MyConst.redisKeySession(userId), "sessionId", ctx.channel().id().asLongText());
+        }
     }
 
-    public void logout(ChannelHandlerContext ctx){
+    public void logout(ChannelHandlerContext ctx) {
         Session session = sessionManager.removeSessionBySessionId(ctx.channel().id().asLongText());
         if (session != null) {
             logger.info("user " + session.userId + " now is offline");

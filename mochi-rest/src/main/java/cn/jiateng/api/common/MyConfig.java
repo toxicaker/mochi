@@ -26,4 +26,6 @@ public class MyConfig {
         template.setHashValueSerializer(stringSerializer);
         return template;
     }
+
+
 }
