@@ -75,8 +75,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                     logger.info("established websocket channel for client " + ctx.channel().remoteAddress().toString());
                     Map<String, Object> params = UrlParser.getParameters(url);
                     String userId = (String) params.get("userId");
-                    sessionManager.addSession(new Session(userId, ctx.channel()));
-                    logger.info("user " + userId + " now is online");
+                    service.login(userId, ctx);
                 } else {
                     throw new ServerException("cannot establish websocket for client " + ctx.channel().remoteAddress().toString());
                 }
@@ -86,10 +85,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        Session session = sessionManager.removeSessionBySessionId(ctx.channel().id().asLongText());
-        if (session != null) {
-            logger.info("user " + session.userId + " now is offline");
-        }
+       service.logout(ctx);
     }
 
     private void handleWebSocketRequest(ChannelHandlerContext ctx, WebSocketFrame frame) throws ServiceException, InterruptedException {

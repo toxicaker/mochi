@@ -26,17 +26,7 @@ public class UserController {
     @GetMapping("/{userId}")
     public JsonResp getUser(@PathVariable String userId) {
         User user = userService.getUserById(userId);
-        Map<String, Object> data = packUserData(user);
-        return new JsonResp(data);
+        return new JsonResp(user);
     }
 
-    private Map<String, Object> packUserData(User user) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", user.id);
-        data.put("username", user.username);
-        data.put("nickname", user.nickname);
-        data.put("lastLogin", user.lastLoginTime);
-        data.put("createTime", user.createTime);
-        return data;
-    }
 }

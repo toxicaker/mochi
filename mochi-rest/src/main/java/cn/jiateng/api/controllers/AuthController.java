@@ -9,9 +9,6 @@ import cn.jiateng.api.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping(value = "/api/auth", produces = "application/json")
 public class AuthController {
@@ -26,7 +23,7 @@ public class AuthController {
     @PostMapping("/login")
     public JsonResp login(@RequestBody LoginForm loginForm) throws ServiceException {
         User user = authService.signin(loginForm.username, loginForm.password);
-        return new JsonResp(packUserData(user));
+        return new JsonResp(user);
     }
 
     @PostMapping("/signup")
@@ -35,17 +32,7 @@ public class AuthController {
         user.username = username;
         user.password = password1;
         user = authService.signup(user, password2);
-        return new JsonResp(packUserData(user));
-    }
-
-    private Map<String, Object> packUserData(User user) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("username", user.username);
-        data.put("id", user.id);
-        data.put("nickname", user.nickname);
-        data.put("lastLogin", user.lastLoginTime);
-        data.put("createTime", user.createTime);
-        return data;
+        return new JsonResp(user);
     }
 
 }

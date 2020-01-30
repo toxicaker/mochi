@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public final class RedisUtil {
@@ -91,5 +88,26 @@ public final class RedisUtil {
 
     public boolean removeKey(String key) {
         return this.redisTemplate.delete(key);
+    }
+
+    public void mapAdd(String key, String mapKey, Object val) {
+        this.redisTemplate.opsForHash().put(key, mapKey, val);
+    }
+
+    public void mapAdd(String key, Map<String, Object> data) {
+        this.redisTemplate.opsForHash().putAll(key, data);
+    }
+
+
+    public Object mapGet(String key, String mapKey) {
+        return this.redisTemplate.opsForHash().get(key, mapKey);
+    }
+
+    public boolean mapHasKey(String key, String mapKey) {
+        return this.redisTemplate.opsForHash().hasKey(key, mapKey);
+    }
+
+    public boolean hasKey(String key){
+        return this.redisTemplate.hasKey(key);
     }
 }

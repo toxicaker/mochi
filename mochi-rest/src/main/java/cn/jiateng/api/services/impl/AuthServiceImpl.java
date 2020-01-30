@@ -1,7 +1,6 @@
 package cn.jiateng.api.services.impl;
 
 import cn.jiateng.api.Model.User;
-import cn.jiateng.api.common.MyConst;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.dao.UserDao;
 import cn.jiateng.api.services.AuthService;
@@ -23,6 +22,7 @@ public class AuthServiceImpl implements AuthService {
         this.userDao = userDao;
         this.redisUtil = redisUtil;
     }
+
 
     @Override
     public User signup(User user, String confirmPassword) throws ServiceException {
@@ -49,8 +49,11 @@ public class AuthServiceImpl implements AuthService {
         if (existUser == null) {
             throw new ServiceException("username or password is incorrect");
         }
+//        if(redisUtil.hasKey(MyConst.redisKeySession(existUser.id))){
+//            // Todo: offline message
+//        }
         existUser.lastLoginTime = System.currentTimeMillis();
-        userDao.save(existUser);
+        existUser = userDao.save(existUser);
         return existUser;
     }
 }

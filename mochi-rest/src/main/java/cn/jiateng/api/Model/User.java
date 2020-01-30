@@ -1,5 +1,6 @@
 package cn.jiateng.api.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,6 +11,7 @@ public class User {
 
     public String username;
 
+    @JsonIgnore
     public String password;
 
     public String nickname;

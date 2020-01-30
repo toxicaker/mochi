@@ -1,5 +1,7 @@
 package cn.jiateng.server;
+
 import cn.jiateng.server.common.SessionManager;
+import cn.jiateng.server.utils.RedisUtil;
 import com.google.gson.Gson;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -17,11 +19,9 @@ public class MochiMsgServer {
 
     final static Logger logger = Logger.getLogger(MochiMsgServer.class);
 
-    final static JedisPool pool = new JedisPool(new JedisPoolConfig(), "localhost");
+    final static Gson gson = new Gson();
 
-    final static  Gson gson = new Gson();
-
-    final static  SessionManager sessionManager = new SessionManager(new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE));
+    final static SessionManager sessionManager = new SessionManager(new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE));
 
     public static void main(String[] args) throws Exception {
         int port = 12306;
@@ -41,6 +41,7 @@ public class MochiMsgServer {
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
+            RedisUtil.close();
         }
     }
 
