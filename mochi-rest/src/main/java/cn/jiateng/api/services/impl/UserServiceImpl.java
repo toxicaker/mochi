@@ -48,6 +48,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public FriendRequest getFriendRequestById(String requestId) {
+        return friendRequestDao.findById(requestId).get();
+    }
+
+    @Override
     public Set<User> listFriends(String userId) {
         Set<User> res = new HashSet<>();
         Set<String> friends = redisUtil.setGet(MyConst.redisKeyFriends(userId));
@@ -60,7 +65,6 @@ public class UserServiceImpl implements UserService {
             }
             // set the result to redis
             for (User user : res) {
-                System.out.println(gson.toJson(user));
                 redisUtil.setAdd(MyConst.redisKeyFriends(userId), gson.toJson(user));
             }
         } else {
@@ -94,7 +98,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public FriendRequest requestFriend(String requesterId, String requesteeId, String message) throws ServiceException {
+    public FriendRequest sendFriendRequest(String requesterId, String requesteeId, String message) throws ServiceException {
+        if(requesterId.equals(requesteeId)){
+            throw new ServiceException("you cannot send friend request to yourself");
+        }
         if (checkUser(requesteeId) || checkUser(requesteeId)) {
             throw new ServiceException("requester or requestee doesn't exist");
         }
@@ -129,6 +136,9 @@ public class UserServiceImpl implements UserService {
         if (friendRequest == null) {
             throw new ServiceException("friend request does not exist");
         }
+        if(friendRequest.status == 1){
+            throw new ServiceException("they are already friends");
+        }
         friendRequest.status = -1;
         friendRequestDao.save(friendRequest);
     }
@@ -153,11 +163,16 @@ public class UserServiceImpl implements UserService {
         // update friend request
         friendRequest.status = 1;
         friendRequestDao.save(friendRequest);
+        friendRequest = friendRequestDao.findByRequesterIdAndRequesteeId(requesteeId, requesterId);
+        if(friendRequest != null){
+            friendRequest.status = 1;
+            friendRequestDao.save(friendRequest);
+        }
     }
 
     @Override
     public List<FriendRequest> listFriendRequests(String userId, boolean isRequester) {
-        if (isRequester) return friendRequestDao.findAllByRequesteeIdAndStatus(userId, 0);
+        if (isRequester) return friendRequestDao.findAllByRequesterIdAndStatus(userId, 0);
         return friendRequestDao.findAllByRequesteeIdAndStatus(userId, 0);
     }
 
@@ -167,7 +182,7 @@ public class UserServiceImpl implements UserService {
         Friend friend1 = friendDao.findByUserId1AndUserId2(userId, friendId);
         Friend friend2 = friendDao.findByUserId1AndUserId2(friendId, userId);
         if (friend1 != null || friend2 != null) {
-            throw new ServiceException("they are already friend");
+            throw new ServiceException("they are already friends");
         }
         friend1 = new Friend();
         friend1.userId1 = userId;

@@ -13,13 +13,15 @@ public interface UserService {
 
     User getUserById(String userId);
 
+    FriendRequest getFriendRequestById(String requestId);
+
     Set<User> listFriends(String userId);
 
     Set<String> listFriendIds(String userId);
 
     void removeFriend(String userId, String friendId);
 
-    FriendRequest requestFriend(String requesterId, String requesteeId, String message) throws ServiceException;
+    FriendRequest sendFriendRequest(String requesterId, String requesteeId, String message) throws ServiceException;
 
     void acceptFriendRequest(String requesterId, String requesteeId) throws ServiceException;
 

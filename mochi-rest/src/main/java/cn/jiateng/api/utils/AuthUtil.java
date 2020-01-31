@@ -74,7 +74,7 @@ public final class AuthUtil {
         this.threadLocal.set(userId);
     }
 
-    public String getUserId(String userId) {
+    public String getUserId() {
         return this.threadLocal.get();
     }
 

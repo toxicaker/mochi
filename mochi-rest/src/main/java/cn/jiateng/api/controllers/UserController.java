@@ -26,24 +26,4 @@ public class UserController {
         return new JsonResp(user);
     }
 
-//    @PostMapping("/friends/add/{userId}")
-//    public JsonResp sendFriendRequest(@PathVariable String userId, @RequestParam String friendId) {
-//
-//    }
-//
-//    @PostMapping("/friends/accept/{userId}/{requestId}")
-//    public JsonResp acceptFriendRequest() {
-//
-//    }
-//
-//    @DeleteMapping("/friends/requests/{userId}/{requestId}")
-//    public JsonResp declineFriendRequest() {
-//
-//    }
-//
-//    @DeleteMapping("/friends/{userId}")
-//    public JsonResp deleteFriend(@PathVariable String userId, @RequestParam String friendId) {
-//
-//    }
-
 }

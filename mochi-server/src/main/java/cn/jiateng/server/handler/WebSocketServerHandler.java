@@ -22,17 +22,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     private WebSocketServerHandshaker handshaker;
 
-    private SessionManager sessionManager;
-
     private Gson gson;
-
-    private String wsUrl;
 
     private Service service;
 
 
     public WebSocketServerHandler(SessionManager sessionManager, Gson gson) {
-        this.sessionManager = sessionManager;
         this.gson = gson;
         this.service = new Service(sessionManager, gson);
     }
@@ -62,7 +57,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
         // establish websocket
         WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
-                wsUrl, null, false);
+                "", null, false);
         handshaker = wsFactory.newHandshaker(req);
         if (handshaker == null) {
             WebSocketServerHandshakerFactory
@@ -114,8 +109,8 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
         //send an ack
         wsMsg.setCreateTime(System.currentTimeMillis());
-        ChannelFuture cf = ctx.channel().writeAndFlush(new TextWebSocketFrame("success-" + wsMsg.getCreateTime()));
 
+        ctx.channel().writeAndFlush(new TextWebSocketFrame("success-" + wsMsg.getCreateTime()));
 
         // message handling
         switch (wsMsg.getType()) {

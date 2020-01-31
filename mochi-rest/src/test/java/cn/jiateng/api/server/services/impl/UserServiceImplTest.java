@@ -17,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 class UserServiceImplTest {
@@ -80,7 +78,7 @@ class UserServiceImplTest {
     void requestFriend() throws ServiceException {
         User user1 = userDao.findByUsername("username1");
         User user2 = userDao.findByUsername("username2");
-        userService.requestFriend(user1.id, user2.id, "e");
+        userService.sendFriendRequest(user1.id, user2.id, "e");
         System.out.println(friendRequestDao.findByRequesterIdAndRequesteeId(user1.id, user2.id));
     }
 
