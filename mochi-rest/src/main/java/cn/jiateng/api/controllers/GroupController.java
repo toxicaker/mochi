@@ -6,6 +6,7 @@ import cn.jiateng.api.Model.UserGroup;
 import cn.jiateng.api.common.JsonResp;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.data.CreateGroupForm;
+import cn.jiateng.api.security.SkipAuth;
 import cn.jiateng.api.services.GroupService;
 import cn.jiateng.api.services.UserService;
 import cn.jiateng.api.utils.AuthUtil;
@@ -45,6 +46,7 @@ public class GroupController {
     }
 
     @GetMapping("/members/{groupId}")
+    @SkipAuth
     public JsonResp listGroupMembers(@PathVariable String groupId) throws ServiceException {
         List<User> members = groupService.listGroupMembers(groupId);
         return new JsonResp(members);

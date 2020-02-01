@@ -80,7 +80,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-       service.logout(ctx);
+        service.logout(ctx);
     }
 
     private void handleWebSocketRequest(ChannelHandlerContext ctx, WebSocketFrame frame) throws ServiceException, InterruptedException {
@@ -118,6 +118,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                 service.privateMessage(wsMsg, ctx);
                 break;
             case WSMsg.MsgType.GROUP:
+                service.groupMessage(wsMsg, ctx);
                 break;
             default:
                 break;

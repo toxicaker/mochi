@@ -1,5 +1,6 @@
 package cn.jiateng.server.common;
 
+import com.google.gson.Gson;
 import io.netty.channel.group.ChannelGroup;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,6 +11,8 @@ public class SessionManager {
     private ConcurrentHashMap<String, Session> sessIdMap = new ConcurrentHashMap<>();
 
     private ChannelGroup channelGroup;
+
+    private Gson gson = new Gson();
 
     public SessionManager(ChannelGroup channelGroup) {
         this.channelGroup = channelGroup;
@@ -25,7 +28,7 @@ public class SessionManager {
     }
 
     public Session getSession(String userId) {
-        if(userId == null) return null;
+        if (userId == null) return null;
         return userIdMap.get(userId);
     }
 
@@ -39,6 +42,8 @@ public class SessionManager {
         sessIdMap.remove(sessionId);
         return session;
     }
+
+
 
     public synchronized void close() {
         userIdMap.clear();

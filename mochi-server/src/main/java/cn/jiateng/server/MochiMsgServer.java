@@ -40,6 +40,7 @@ public class MochiMsgServer {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
             RedisUtil.close();
+            sessionManager.close();
         }
     }
 

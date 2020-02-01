@@ -53,6 +53,17 @@ public class WSMsg {
         this.type = type;
     }
 
+    @Override
+    public String toString() {
+        return "WSMsg{" +
+                "sourceId='" + sourceId + '\'' +
+                ", targetId='" + targetId + '\'' +
+                ", message='" + message + '\'' +
+                ", type=" + type +
+                ", createTime=" + createTime +
+                '}';
+    }
+
     public class MsgType {
 
         public static final int PRIVATE = 1;
