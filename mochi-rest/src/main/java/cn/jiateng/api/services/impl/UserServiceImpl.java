@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public FriendRequest sendFriendRequest(String requesterId, String requesteeId, String message) throws ServiceException {
-        if(requesterId.equals(requesteeId)){
+        if (requesterId.equals(requesteeId)) {
             throw new ServiceException("you cannot send friend request to yourself");
         }
         if (checkUser(requesteeId) || checkUser(requesteeId)) {
@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
         if (friendRequest == null) {
             throw new ServiceException("friend request does not exist");
         }
-        if(friendRequest.status == 1){
+        if (friendRequest.status == 1) {
             throw new ServiceException("they are already friends");
         }
         friendRequest.status = -1;
@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
         friendRequest.status = 1;
         friendRequestDao.save(friendRequest);
         friendRequest = friendRequestDao.findByRequesterIdAndRequesteeId(requesteeId, requesterId);
-        if(friendRequest != null){
+        if (friendRequest != null) {
             friendRequest.status = 1;
             friendRequestDao.save(friendRequest);
         }
@@ -197,44 +197,6 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Override
-    public void createGroup(String userId, String name, List<String> userIds) {
-        Group group = new Group();
-        group.name = name;
-        group.createTime = System.currentTimeMillis();
-        group = groupDao.save(group);
-        for (String uId : userIds) {
-            UserGroup userGroup = new UserGroup();
-            userGroup.userId = uId;
-            userGroup.groupId = group.id;
-            userGroup.createTime = System.currentTimeMillis();
-            userGroupDao.save(userGroup);
-        }
-    }
-
-    @Override
-    public UserGroup joinGroup(String userId, String groupId) throws ServerException {
-        Optional<Group> group = groupDao.findById(groupId);
-        if (!group.isPresent()) throw new ServerException("group " + groupId + " does not exist");
-        UserGroup userGroup = userGroupDao.findByUserIdAndGroupId(userId, groupId);
-        if(userGroup != null) throw new ServerException("user " + userId + " is already in the group " + groupId);
-        userGroup = new UserGroup();
-        userGroup.userId = userId;
-        userGroup.groupId = groupId;
-        userGroup.createTime = System.currentTimeMillis();
-        userGroupDao.save(userGroup);
-        return userGroup;
-    }
-
-    @Override
-    public UserGroup leaveGroup(String userId, String groupId) throws ServerException {
-        Optional<Group> group = groupDao.findById(groupId);
-        if (!group.isPresent()) throw new ServerException("group " + groupId + " does not exist");
-        UserGroup userGroup = userGroupDao.findByUserIdAndGroupId(userId, groupId);
-        if(userGroup == null) throw new ServerException("user " + userId + " not in the group " + groupId);
-        userGroupDao.delete(userGroup);
-        return userGroup;
-    }
 
     private boolean checkUser(String userId) {
         return !userDao.findById(userId).isPresent();

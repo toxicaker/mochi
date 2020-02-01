@@ -9,4 +9,12 @@ public class MyConst {
     public static String redisKeySession(String userId) {
         return "mochi-authService-session-" + userId;
     }
+
+    public static String redisKeyGroupMembers(String groupId) {
+        return "mochi-groupService-members-" + groupId;
+    }
+
+    public static String redisKeyGroups(String userId) {
+        return "mochi-groupService-groups-" + userId;
+    }
 }

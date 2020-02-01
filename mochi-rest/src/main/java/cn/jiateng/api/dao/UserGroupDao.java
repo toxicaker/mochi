@@ -12,4 +12,6 @@ public interface UserGroupDao extends MongoRepository<UserGroup, String> {
     List<UserGroup> findByGroupId(String groupId);
 
     List<UserGroup> findByUserId(String userId);
+
+    void deleteByUserIdAndGroupId(String userId, String groupId);
 }

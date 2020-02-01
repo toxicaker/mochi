@@ -31,9 +31,4 @@ public interface UserService {
 
     void doAddFriend(String userId, String friendId) throws ServiceException;
 
-    void createGroup(String userId, String name, List<String> userIds);
-
-    UserGroup joinGroup(String userId, String groupId) throws ServerException;
-
-    UserGroup leaveGroup(String userId, String groupId) throws ServerException;
 }
