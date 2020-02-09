@@ -2,7 +2,6 @@ package cn.jiateng.api.controllers;
 
 import cn.jiateng.api.Model.User;
 import cn.jiateng.api.common.JsonResp;
-import cn.jiateng.api.common.MyConfig;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.data.LoginForm;
 import cn.jiateng.api.data.SignupForm;

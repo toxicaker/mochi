@@ -1,6 +1,5 @@
 package cn.jiateng.server.handler;
 
-import cn.jiateng.api.Model.User;
 import cn.jiateng.api.common.JsonResp;
 import cn.jiateng.api.common.MyConst;
 import cn.jiateng.server.common.ServiceException;
