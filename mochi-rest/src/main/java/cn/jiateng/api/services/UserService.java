@@ -2,10 +2,8 @@ package cn.jiateng.api.services;
 
 import cn.jiateng.api.Model.FriendRequest;
 import cn.jiateng.api.Model.User;
-import cn.jiateng.api.Model.UserGroup;
 import cn.jiateng.api.common.ServiceException;
 
-import java.rmi.ServerException;
 import java.util.List;
 import java.util.Set;
 
@@ -15,9 +13,9 @@ public interface UserService {
 
     FriendRequest getFriendRequestById(String requestId);
 
-    Set<User> listFriends(String userId);
+    Set<User> listFriends(String userId) throws ServiceException;
 
-    Set<String> listFriendIds(String userId);
+    Set<String> listFriendIds(String userId) throws ServiceException;
 
     void removeFriend(String userId, String friendId);
 

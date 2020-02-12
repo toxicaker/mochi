@@ -2,12 +2,10 @@ package cn.jiateng.api.services.impl;
 
 import cn.jiateng.api.Model.Group;
 import cn.jiateng.api.Model.User;
-import cn.jiateng.api.Model.UserGroup;
 import cn.jiateng.api.common.MyConst;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.dao.GroupDao;
 import cn.jiateng.api.dao.UserDao;
-import cn.jiateng.api.dao.UserGroupDao;
 import cn.jiateng.api.services.GroupService;
 import cn.jiateng.api.utils.RedisUtil;
 import com.google.gson.Gson;
@@ -25,8 +23,6 @@ public class GroupServiceImpl implements GroupService {
 
     private final GroupDao groupDao;
 
-    private final UserGroupDao userGroupDao;
-
     private final UserDao userDao;
 
     private final RedisUtil redisUtil;
@@ -34,9 +30,8 @@ public class GroupServiceImpl implements GroupService {
     private Gson gson = new Gson();
 
     @Autowired
-    public GroupServiceImpl(GroupDao groupDao, UserGroupDao userGroupDao, UserDao userDao, RedisUtil redisUtil) {
+    public GroupServiceImpl(GroupDao groupDao, UserDao userDao, RedisUtil redisUtil) {
         this.groupDao = groupDao;
-        this.userGroupDao = userGroupDao;
         this.userDao = userDao;
         this.redisUtil = redisUtil;
     }
@@ -61,9 +56,8 @@ public class GroupServiceImpl implements GroupService {
             return res;
         }
         // read from mongodb
-        List<UserGroup> userGroups = userGroupDao.findByGroupId(groupId);
-        for (UserGroup userGroup : userGroups) {
-            String userId = userGroup.userId;
+        List<String> userIds = groupDao.findById(groupId).get().userIds;
+        for (String userId : userIds) {
             Optional<User> user = userDao.findById(userId);
             if (user.isPresent()) {
                 res.add(user.get());
@@ -80,50 +74,37 @@ public class GroupServiceImpl implements GroupService {
         Group group = new Group();
         group.name = name;
         group.createTime = System.currentTimeMillis();
+        group.userIds = userIds;
         group = groupDao.save(group);
         for (String uId : userIds) {
-            UserGroup userGroup = new UserGroup();
-            Optional<User> op = userDao.findById(uId);
-            if (op.isPresent()) {
-                userGroup.userId = uId;
-                userGroup.groupId = group.id;
-                userGroup.createTime = System.currentTimeMillis();
-                userGroupDao.save(userGroup);
-                // save to redis
-                String jsonStr = gson.toJson(op.get());
-                redisUtil.listLAdd(MyConst.redisKeyGroupMembers(group.id), jsonStr);
+            Optional<User> user = userDao.findById(uId);
+            if(user.isPresent()){
+                user.get().groupIds.add(group.id);
+                redisUtil.removeKey(MyConst.redisKeyGroups(uId));
             }
-            redisUtil.removeKey(MyConst.redisKeyGroups(uId));
         }
         return group;
     }
 
     @Override
-    public UserGroup joinGroup(String userId, String groupId) throws ServerException {
+    public void joinGroup(String userId, String groupId) throws ServerException {
         checkUserAndGroup(userId, groupId);
-        UserGroup userGroup = userGroupDao.findByUserIdAndGroupId(userId, groupId);
-        if (userGroup != null) throw new ServerException("user " + userId + " is already in the group " + groupId);
-        userGroup = new UserGroup();
-        userGroup.userId = userId;
-        userGroup.groupId = groupId;
-        userGroup.createTime = System.currentTimeMillis();
-        userGroup = userGroupDao.save(userGroup);
+        Optional<User> user = userDao.findById(userId);
+        if(user.get().groupIds.contains(groupId)) throw new ServerException("user " + userId + " is already in the group " + groupId);
+        user.get().groupIds.add(groupId);
         // remove redis key
         redisUtil.removeKey(MyConst.redisKeyGroupMembers(groupId));
         redisUtil.removeKey(MyConst.redisKeyGroups(userId));
-        return userGroup;
     }
 
     @Override
-    public UserGroup leaveGroup(String userId, String groupId) throws ServerException {
+    public void leaveGroup(String userId, String groupId) throws ServerException {
         checkUserAndGroup(userId, groupId);
-        UserGroup userGroup = userGroupDao.findByUserIdAndGroupId(userId, groupId);
-        if (userGroup == null) throw new ServerException("user " + userId + " not in the group " + groupId);
-        userGroupDao.deleteByUserIdAndGroupId(userId, groupId);
+        Optional<User> user = userDao.findById(userId);
+        user.get().groupIds.remove(groupId);
         // remove redis key
         redisUtil.removeKey(MyConst.redisKeyGroupMembers(groupId));
         redisUtil.removeKey(MyConst.redisKeyGroups(userId));
-        return userGroup;
     }
 
     @Override
@@ -139,9 +120,8 @@ public class GroupServiceImpl implements GroupService {
             }
             return groups;
         }
-        List<UserGroup> userGroups = userGroupDao.findByUserId(userId);
-        for (UserGroup userGroup : userGroups) {
-            Optional<Group> group = groupDao.findById(userGroup.groupId);
+        for (String groupId: user.get().groupIds) {
+            Optional<Group> group = groupDao.findById(groupId);
             if (group.isPresent()) {
                 groups.add(group.get());
                 String jsonStr = gson.toJson(group.get());

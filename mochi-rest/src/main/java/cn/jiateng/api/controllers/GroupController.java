@@ -2,7 +2,6 @@ package cn.jiateng.api.controllers;
 
 import cn.jiateng.api.Model.Group;
 import cn.jiateng.api.Model.User;
-import cn.jiateng.api.Model.UserGroup;
 import cn.jiateng.api.common.JsonResp;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.data.CreateGroupForm;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.rmi.ServerException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +45,7 @@ public class GroupController {
     public JsonResp listGroups(@PathVariable String userId) throws ServiceException, IllegalAccessException {
         List<Group> groups = groupService.listGroups(userId);
         List<Map<String, Object>> res = new ArrayList<>();
-        for(Group group : groups){
+        for (Group group : groups) {
             Map<String, Object> map = MapUtil.obj2Map(group);
             map.put("lastMessage", "");
             map.put("lastMessageTime", 0);
@@ -65,21 +63,19 @@ public class GroupController {
 
     @PostMapping("/join/{groupId}")
     public JsonResp joinGroup(@PathVariable String groupId) throws ServerException {
-        UserGroup userGroup = groupService.joinGroup(authUtil.getUserId(), groupId);
-        Group group = groupService.getGroupById(userGroup.groupId);
-        return new JsonResp(group);
+        groupService.joinGroup(authUtil.getUserId(), groupId);
+        return new JsonResp(null);
     }
 
     @PostMapping("/leave/{groupId}")
     public JsonResp leaveGroup(@PathVariable String groupId) throws ServerException {
-        UserGroup userGroup = groupService.leaveGroup(authUtil.getUserId(), groupId);
-        Group group = groupService.getGroupById(userGroup.groupId);
-        return new JsonResp(group);
+        groupService.leaveGroup(authUtil.getUserId(), groupId);
+        return new JsonResp(null);
     }
 
     @PostMapping("/create")
     public JsonResp createGroup(@RequestBody CreateGroupForm createGroupForm) {
-        if(!createGroupForm.userIds.contains(authUtil.getUserId())) createGroupForm.userIds.add(authUtil.getUserId());
+        if (!createGroupForm.userIds.contains(authUtil.getUserId())) createGroupForm.userIds.add(authUtil.getUserId());
         Group group = groupService.createGroup(createGroupForm.name, createGroupForm.userIds);
         return new JsonResp(group);
     }

@@ -1,8 +1,11 @@
 package cn.jiateng.api.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.annotations.Expose;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 @Document(collection = "users")
 public class User {
@@ -15,6 +18,12 @@ public class User {
     public String password;
 
     public String nickname;
+
+    @Expose (serialize = false, deserialize = false)
+    public List<String> friendIds;
+
+    @Expose (serialize = false, deserialize = false)
+    public List<String> groupIds;
 
     public Long lastLoginTime;
 
@@ -29,7 +38,10 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 ", nickname='" + nickname + '\'' +
+                ", friendIds=" + friendIds +
+                ", groupIds=" + groupIds +
                 ", lastLoginTime=" + lastLoginTime +
+                ", token='" + token + '\'' +
                 ", createTime=" + createTime +
                 '}';
     }

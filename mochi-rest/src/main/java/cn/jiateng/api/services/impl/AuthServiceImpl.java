@@ -15,14 +15,11 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserDao userDao;
 
-    private final RedisUtil redisUtil;
-
     private final AuthUtil authUtil;
 
     @Autowired
-    public AuthServiceImpl(UserDao userDao, RedisUtil redisUtil,  AuthUtil authUtil) {
+    public AuthServiceImpl(UserDao userDao,  AuthUtil authUtil) {
         this.userDao = userDao;
-        this.redisUtil = redisUtil;
         this.authUtil = authUtil;
     }
 
