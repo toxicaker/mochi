@@ -1,25 +1,17 @@
 package cn.jiateng.server.handler;
 
-import cn.jiateng.api.common.JsonResp;
-import cn.jiateng.api.common.MyConst;
 import cn.jiateng.server.common.ServiceException;
 import cn.jiateng.server.common.Session;
 import cn.jiateng.server.common.SessionManager;
-import cn.jiateng.server.common.WSMsg;
-import cn.jiateng.server.utils.HttpUtil;
-import cn.jiateng.server.utils.RedisUtil;
+import cn.jiateng.server.protocal.WSMsg;
 import com.google.gson.Gson;
-import com.squareup.okhttp.Response;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class Service {
@@ -35,24 +27,7 @@ public class Service {
         this.gson = gson;
     }
 
-    public void login(String userId, ChannelHandlerContext ctx) throws ServiceException {
-        if (!RedisUtil.jedis.exists(MyConst.redisKeySession(userId))) {
-            ctx.channel().close();
-            throw new ServiceException("user " + userId + " does not have session! login failed");
-        } else {
-            sessionManager.addSession(new Session(userId, ctx.channel()));
-            logger.info("user " + userId + " now is online");
-            RedisUtil.jedis.hset(MyConst.redisKeySession(userId), "sessionId", ctx.channel().id().asLongText());
-        }
-    }
 
-    public void logout(ChannelHandlerContext ctx) {
-        Session session = sessionManager.removeSessionBySessionId(ctx.channel().id().asLongText());
-        if (session != null) {
-            logger.info("user " + session.userId + " now is offline");
-            RedisUtil.jedis.del(MyConst.redisKeySession(session.userId));
-        }
-    }
 
     public void privateMessage(WSMsg msg, ChannelHandlerContext ctx) throws ServiceException {
         if (msg.getType() != WSMsg.MsgType.PRIVATE) {
@@ -93,19 +68,9 @@ public class Service {
     }
 
     private List<String> getUserIdByGroupId(String groupId) throws ServiceException {
-        List<String> res = new ArrayList<>();
+
         try {
-            Response response = HttpUtil.get("http://localhost:10086/api/groups/members/" + groupId);
-            String jsonStr = response.body().string();
-            JsonResp jsonResp = gson.fromJson(jsonStr, JsonResp.class);
-            if (jsonResp.getCode() != 1) {
-                throw new ServiceException(jsonResp.getMessage());
-            }
-            List<Map<String, Object>> users = (List<Map<String, Object>>) jsonResp.getData();
-            for (Map<String, Object> user : users) {
-                res.add((String) user.get("id"));
-            }
-            return res;
+
         } catch (Exception e) {
             throw new ServiceException("failed to get group " + groupId + " member");
         }

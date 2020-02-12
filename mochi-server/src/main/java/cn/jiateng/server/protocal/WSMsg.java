@@ -1,4 +1,4 @@
-package cn.jiateng.server.common;
+package cn.jiateng.server.protocal;
 
 // websocket message protocol
 public class WSMsg {

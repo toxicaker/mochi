@@ -10,11 +10,15 @@ import cn.jiateng.api.security.SkipAuth;
 import cn.jiateng.api.services.GroupService;
 import cn.jiateng.api.services.UserService;
 import cn.jiateng.api.utils.AuthUtil;
+import cn.jiateng.api.utils.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.rmi.ServerException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/groups", produces = "application/json")
@@ -40,9 +44,16 @@ public class GroupController {
     }
 
     @GetMapping("/list/{userId}")
-    public JsonResp listGroups(@PathVariable String userId) throws ServiceException {
+    public JsonResp listGroups(@PathVariable String userId) throws ServiceException, IllegalAccessException {
         List<Group> groups = groupService.listGroups(userId);
-        return new JsonResp(groups);
+        List<Map<String, Object>> res = new ArrayList<>();
+        for(Group group : groups){
+            Map<String, Object> map = MapUtil.obj2Map(group);
+            map.put("lastMessage", "");
+            map.put("lastMessageTime", 0);
+            res.add(map);
+        }
+        return new JsonResp(res);
     }
 
     @GetMapping("/members/{groupId}")

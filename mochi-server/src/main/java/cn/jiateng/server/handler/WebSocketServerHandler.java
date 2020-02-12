@@ -1,6 +1,8 @@
 package cn.jiateng.server.handler;
-
 import cn.jiateng.server.common.*;
+import cn.jiateng.server.handler.serivces.UserService;
+import cn.jiateng.server.handler.serivces.impl.UserServiceImpl;
+import cn.jiateng.server.protocal.WSMsg;
 import cn.jiateng.server.utils.UrlParser;
 import com.google.gson.Gson;
 import io.netty.channel.ChannelFuture;
@@ -12,7 +14,6 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.websocketx.*;
 import org.apache.log4j.Logger;
-
 import java.rmi.ServerException;
 import java.util.Map;
 
@@ -24,12 +25,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     private Gson gson;
 
-    private Service service;
-
+    private UserService userService;
 
     public WebSocketServerHandler(SessionManager sessionManager, Gson gson) {
         this.gson = gson;
-        this.service = new Service(sessionManager, gson);
+        this.userService = new UserServiceImpl(sessionManager);
     }
 
 
@@ -70,7 +70,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                     logger.info("established websocket channel for client " + ctx.channel().remoteAddress().toString());
                     Map<String, Object> params = UrlParser.getParameters(url);
                     String userId = (String) params.get("userId");
-                    service.login(userId, ctx);
+                    userService.login(userId, ctx);
                 } else {
                     throw new ServerException("cannot establish websocket for client " + ctx.channel().remoteAddress().toString());
                 }
@@ -80,7 +80,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        service.logout(ctx);
+        userService.logout(ctx);
     }
 
     private void handleWebSocketRequest(ChannelHandlerContext ctx, WebSocketFrame frame) throws ServiceException, InterruptedException {
@@ -112,17 +112,17 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
         ctx.channel().writeAndFlush(new TextWebSocketFrame("success-" + wsMsg.getCreateTime()));
 
-        // message handling
-        switch (wsMsg.getType()) {
-            case WSMsg.MsgType.PRIVATE:
-                service.privateMessage(wsMsg, ctx);
-                break;
-            case WSMsg.MsgType.GROUP:
-                service.groupMessage(wsMsg, ctx);
-                break;
-            default:
-                break;
-        }
+//        // message handling
+//        switch (wsMsg.getType()) {
+//            case WSMsg.MsgType.PRIVATE:
+//                service.privateMessage(wsMsg, ctx);
+//                break;
+//            case WSMsg.MsgType.GROUP:
+//                service.groupMessage(wsMsg, ctx);
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     @Override

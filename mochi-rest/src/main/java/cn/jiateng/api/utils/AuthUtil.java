@@ -45,6 +45,7 @@ public final class AuthUtil {
      */
     public String checkToken(String token) {
         if (token == null || "".equals(token)) return null;
+        System.out.println(token);
         String userId = Jwts.parser().setSigningKey(SALT).parseClaimsJws(token).getBody().getId();
         if (userId == null || "".equals(userId)) return null;
         if (!redisUtil.hasKey(MyConst.redisKeySession(userId))) return null;

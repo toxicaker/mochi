@@ -7,6 +7,7 @@ import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.data.FriendRequestForm;
 import cn.jiateng.api.services.UserService;
 import cn.jiateng.api.utils.AuthUtil;
+import cn.jiateng.api.utils.MapUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,9 +28,16 @@ public class FriendController {
     }
 
     @GetMapping("")
-    public JsonResp listFriends() {
+    public JsonResp listFriends() throws IllegalAccessException {
         Set<User> friends = userService.listFriends(authUtil.getUserId());
-        return new JsonResp(friends);
+        Set<Map<String, Object>> res = new HashSet<>();
+        for (User user : friends) {
+            Map<String, Object> map = MapUtil.obj2Map(user);
+            map.put("lastMessage", "");
+            map.put("lastMessageTime", 0);
+            res.add(map);
+        }
+        return new JsonResp(res);
     }
 
     @DeleteMapping("/{friendId}")
