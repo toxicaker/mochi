@@ -2,7 +2,6 @@ package cn.jiateng.server;
 
 import cn.jiateng.server.common.SessionManager;
 import cn.jiateng.server.utils.RedisUtil;
-import com.google.gson.Gson;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -17,7 +16,6 @@ public class MochiMsgServer {
 
     final static Logger logger = Logger.getLogger(MochiMsgServer.class);
 
-    final static Gson gson = new Gson();
 
     final static SessionManager sessionManager = new SessionManager(new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE));
 
@@ -32,7 +30,7 @@ public class MochiMsgServer {
                     channel(NioServerSocketChannel.class).
                     option(ChannelOption.SO_BACKLOG, 128).
                     childOption(ChannelOption.SO_KEEPALIVE, true).
-                    childHandler(new MyChannelInitializer(sessionManager, gson));
+                    childHandler(new MyChannelInitializer(sessionManager));
             ChannelFuture cf = bootstrap.bind(port).sync();
             logger.info("Mochi message server started at localhost:" + port);
             cf.channel().closeFuture().sync();

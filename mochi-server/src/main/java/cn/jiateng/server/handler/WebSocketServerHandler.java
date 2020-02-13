@@ -1,10 +1,13 @@
 package cn.jiateng.server.handler;
 import cn.jiateng.server.common.*;
+import cn.jiateng.server.handler.serivces.MessageService;
 import cn.jiateng.server.handler.serivces.UserService;
+import cn.jiateng.server.handler.serivces.impl.MessageServiceImpl;
 import cn.jiateng.server.handler.serivces.impl.UserServiceImpl;
-import cn.jiateng.server.protocal.WSMsg;
+import cn.jiateng.server.protocal.Msg;
 import cn.jiateng.server.utils.UrlParser;
 import com.google.gson.Gson;
+import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -14,7 +17,10 @@ import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.websocketx.*;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
 import java.rmi.ServerException;
+import java.util.List;
 import java.util.Map;
 
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> {
@@ -23,18 +29,18 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
     private WebSocketServerHandshaker handshaker;
 
-    private Gson gson;
-
     private UserService userService;
 
-    public WebSocketServerHandler(SessionManager sessionManager, Gson gson) {
-        this.gson = gson;
+    private MessageService messageService;
+
+    public WebSocketServerHandler(SessionManager sessionManager) {
         this.userService = new UserServiceImpl(sessionManager);
+        this.messageService = new MessageServiceImpl(sessionManager);
     }
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws ServiceException, InterruptedException {
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws ServiceException, IOException {
         if (msg instanceof FullHttpRequest) {
             handleHttpRequest(ctx, (FullHttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {
@@ -83,7 +89,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         userService.logout(ctx);
     }
 
-    private void handleWebSocketRequest(ChannelHandlerContext ctx, WebSocketFrame frame) throws ServiceException, InterruptedException {
+    private void handleWebSocketRequest(ChannelHandlerContext ctx, WebSocketFrame frame) throws IOException, ServiceException {
         if (frame instanceof CloseWebSocketFrame) {
             handshaker.close(ctx.channel(),
                     (CloseWebSocketFrame) frame.retain());
@@ -99,30 +105,21 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
                     "%s frame types not supported", frame.getClass().getName()));
         }
 
-        String message = ((TextWebSocketFrame) frame).text();
-        WSMsg wsMsg;
-        try {
-            wsMsg = gson.fromJson(message, WSMsg.class);
-        } catch (Exception e) {
-            throw new ServiceException("wrong message format: " + message);
+        byte[] bytes = frame.content().array();
+        Msg.Message message = Msg.Message.parseFrom(bytes);
+        // message handling
+        switch (message.getType()) {
+            case PERSONAL:
+                messageService.sendMessage(message.getFromId(), message.getToId(), message.getContent());
+                break;
+            case ACK:
+                break;
+            case GROUP:
+                List<String> userIds = userService.getUserIdsByGroupId(message.getToId());
+                messageService.sendMessages(message.getFromId(), userIds, message.getContent());
+                break;
         }
 
-        //send an ack
-        wsMsg.setCreateTime(System.currentTimeMillis());
-
-        ctx.channel().writeAndFlush(new TextWebSocketFrame("success-" + wsMsg.getCreateTime()));
-
-//        // message handling
-//        switch (wsMsg.getType()) {
-//            case WSMsg.MsgType.PRIVATE:
-//                service.privateMessage(wsMsg, ctx);
-//                break;
-//            case WSMsg.MsgType.GROUP:
-//                service.groupMessage(wsMsg, ctx);
-//                break;
-//            default:
-//                break;
-//        }
     }
 
     @Override
