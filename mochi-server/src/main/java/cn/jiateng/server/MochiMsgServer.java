@@ -2,6 +2,7 @@ package cn.jiateng.server;
 
 import cn.jiateng.server.common.SessionManager;
 import cn.jiateng.server.utils.RedisUtil;
+import cn.jiateng.zookeeper.ServiceManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -11,19 +12,26 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.concurrent.ImmediateEventExecutor;
 import org.apache.log4j.Logger;
 
+import java.net.InetAddress;
+
 
 public class MochiMsgServer {
 
     final static Logger logger = Logger.getLogger(MochiMsgServer.class);
 
-
     final static SessionManager sessionManager = new SessionManager(new DefaultChannelGroup(ImmediateEventExecutor.INSTANCE));
+
+    public static String serviceName;
+
+    public static String address;
 
     public static void main(String[] args) throws Exception {
         int port = 12306;
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
-
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        serviceName = ServiceManager.registerService("/mochi-server", ip, port + "");
+        address = ip + ":" + port;
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
             bootstrap.group(bossGroup, workerGroup).

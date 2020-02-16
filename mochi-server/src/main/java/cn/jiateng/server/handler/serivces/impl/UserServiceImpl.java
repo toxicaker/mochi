@@ -2,12 +2,14 @@ package cn.jiateng.server.handler.serivces.impl;
 
 import cn.jiateng.api.common.JsonResp;
 import cn.jiateng.api.common.MyConst;
+import cn.jiateng.server.MochiMsgServer;
 import cn.jiateng.server.common.ServiceException;
 import cn.jiateng.server.common.Session;
 import cn.jiateng.server.common.SessionManager;
 import cn.jiateng.server.handler.serivces.UserService;
 import cn.jiateng.server.utils.HttpUtil;
 import cn.jiateng.server.utils.RedisUtil;
+import cn.jiateng.zookeeper.ServiceManager;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Response;
 import io.netty.channel.ChannelHandlerContext;
@@ -36,9 +38,10 @@ public class UserServiceImpl implements UserService {
             ctx.channel().close();
             throw new ServiceException("user " + userId + " does not have session! login failed");
         } else {
-            sessionManager.addSession(new Session(userId, ctx.channel()));
+            sessionManager.addSession(new Session(userId, ctx.channel(), MochiMsgServer.serviceName));
             logger.info("user " + userId + " now is online");
             RedisUtil.jedis.hset(MyConst.redisKeySession(userId), "sessionId", ctx.channel().id().asLongText());
+            RedisUtil.jedis.hset(MyConst.redisKeySession(userId), "msgServer", MochiMsgServer.serviceName);
         }
     }
 

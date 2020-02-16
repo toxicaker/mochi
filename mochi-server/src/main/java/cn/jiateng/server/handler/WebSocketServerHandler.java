@@ -1,4 +1,5 @@
 package cn.jiateng.server.handler;
+
 import cn.jiateng.server.common.*;
 import cn.jiateng.server.handler.serivces.MessageService;
 import cn.jiateng.server.handler.serivces.UserService;
@@ -6,8 +7,6 @@ import cn.jiateng.server.handler.serivces.impl.MessageServiceImpl;
 import cn.jiateng.server.handler.serivces.impl.UserServiceImpl;
 import cn.jiateng.server.protocal.Msg;
 import cn.jiateng.server.utils.UrlParser;
-import com.google.gson.Gson;
-import com.google.protobuf.InvalidProtocolBufferException;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -40,7 +39,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
 
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws ServiceException, IOException {
+    protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof FullHttpRequest) {
             handleHttpRequest(ctx, (FullHttpRequest) msg);
         } else if (msg instanceof WebSocketFrame) {
@@ -50,15 +49,20 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<Object> 
         }
     }
 
-    private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) throws ServiceException {
+    private void handleHttpRequest(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
         // handle request
         final String url = req.uri();
         String[] paths = url.split("\\?");
-        if (!"/mochi/ws".equals(paths[0])) {
-            throw new ServiceException("wrong websocket request, wrong url");
+        if (url.startsWith("/mochi/msg/forward")) {
+            Msg.Message message = Msg.Message.parseFrom(req.content().array());
+            messageService.sendMessage(message.getFromId(), message.getToId(), message.getContent());
+            return;
         }
         if (!paths[1].startsWith("userId")) {
             throw new ServiceException("wrong websocket request, wrong url. userId is required");
+        }
+        if (!"/mochi/ws".equals(paths[0])) {
+            throw new ServiceException("wrong websocket request, wrong url");
         }
 
         // establish websocket

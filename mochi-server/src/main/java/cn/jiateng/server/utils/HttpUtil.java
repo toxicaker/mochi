@@ -29,4 +29,13 @@ public class HttpUtil {
         Call call = client.newCall(request);
         return call.execute();
     }
+
+    public static Response post(String url, byte[] bytes) throws IOException {
+        RequestBody body = RequestBody.create(MediaType.parse("text/plain"), bytes);
+        Request request = new Request.Builder()
+                .url(url).post(body)
+                .build();
+        Call call = client.newCall(request);
+        return call.execute();
+    }
 }

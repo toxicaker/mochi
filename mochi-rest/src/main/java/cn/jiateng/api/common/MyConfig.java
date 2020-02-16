@@ -28,6 +28,7 @@ public class MyConfig {
     @Value("${spring.redis.cluster.nodes}")
     private List<String> clusterNodes;
 
+
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         if ("dev".equals(env)) {

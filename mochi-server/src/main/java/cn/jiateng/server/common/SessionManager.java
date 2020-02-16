@@ -1,7 +1,9 @@
 package cn.jiateng.server.common;
 
-import com.google.gson.Gson;
+import cn.jiateng.api.common.MyConst;
+import cn.jiateng.server.utils.RedisUtil;
 import io.netty.channel.group.ChannelGroup;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionManager {
@@ -11,8 +13,6 @@ public class SessionManager {
     private ConcurrentHashMap<String, Session> sessIdMap = new ConcurrentHashMap<>();
 
     private ChannelGroup channelGroup;
-
-    private Gson gson = new Gson();
 
     public SessionManager(ChannelGroup channelGroup) {
         this.channelGroup = channelGroup;
@@ -28,7 +28,9 @@ public class SessionManager {
     }
 
     public Session getSession(String userId) {
-        if (userId == null) return null;
+        if (!userIdMap.containsKey(userId)){
+            return getSessionFromRedis(userId);
+        }
         return userIdMap.get(userId);
     }
 
@@ -43,6 +45,13 @@ public class SessionManager {
         return session;
     }
 
+    private Session getSessionFromRedis(String userId) {
+        String key = MyConst.redisKeySession(userId);
+        if (!RedisUtil.jedis.exists(key)) return null;
+        String server = RedisUtil.jedis.hget(key, "msgServer");
+        String sessionId = RedisUtil.jedis.hget(key, "sessionId");
+        return new Session(userId, sessionId, server);
+    }
 
 
     public synchronized void close() {
