@@ -1,4 +1,5 @@
 package cn.jiateng.api.common;
+
 import org.apache.log4j.Logger;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -26,7 +27,7 @@ public class GlobalExceptionHandler {
     private void doLog(Exception ex) {
         if (ex instanceof ServiceException) {
             ServiceException e = (ServiceException) ex;
-            logger.info("service exception: ", e);
+            logger.info("service exception: " + e.getMessage());
         } else if (ex instanceof MissingServletRequestParameterException ||
                 ex instanceof MethodArgumentTypeMismatchException ||
                 ex instanceof HttpRequestMethodNotSupportedException) {
