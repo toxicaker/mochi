@@ -5,6 +5,7 @@ import com.google.gson.annotations.Expose;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "users")
@@ -20,10 +21,10 @@ public class User {
     public String nickname;
 
     @Expose (serialize = false, deserialize = false)
-    public List<String> friendIds;
+    public List<String> friendIds = new ArrayList<>();
 
     @Expose (serialize = false, deserialize = false)
-    public List<String> groupIds;
+    public List<String> groupIds = new ArrayList<>();
 
     public Long lastLoginTime;
 

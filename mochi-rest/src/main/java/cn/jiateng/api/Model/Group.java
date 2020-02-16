@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -15,7 +16,7 @@ public class Group {
     public String name;
 
     @Expose(serialize = false, deserialize = false)
-    public List<String> userIds;
+    public List<String> userIds = new ArrayList<>();
 
     public Long createTime;
 

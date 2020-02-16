@@ -7,6 +7,7 @@ import cn.jiateng.api.data.LoginForm;
 import cn.jiateng.api.data.SignupForm;
 import cn.jiateng.api.services.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,6 +23,8 @@ public class AuthController {
 
     @PostMapping("/sign-in")
     public JsonResp login(@RequestBody LoginForm loginForm) throws ServiceException {
+        if (StringUtils.isEmpty(loginForm.username) || StringUtils.isEmpty(loginForm.password))
+            throw new ServiceException("username or password cannot be empty");
         User user = authService.signin(loginForm.username, loginForm.password);
         return new JsonResp(user);
     }

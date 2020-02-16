@@ -26,6 +26,7 @@ public class GlobalExceptionHandler {
     private void doLog(Exception ex) {
         if (ex instanceof ServiceException) {
             ServiceException e = (ServiceException) ex;
+            logger.info("service exception: ", e);
         } else if (ex instanceof MissingServletRequestParameterException ||
                 ex instanceof MethodArgumentTypeMismatchException ||
                 ex instanceof HttpRequestMethodNotSupportedException) {

@@ -28,7 +28,7 @@ public class FriendController {
     }
 
     @GetMapping("")
-    public JsonResp listFriends() throws IllegalAccessException {
+    public JsonResp listFriends() throws IllegalAccessException, ServiceException {
         Set<User> friends = userService.listFriends(authUtil.getUserId());
         Set<Map<String, Object>> res = new HashSet<>();
         for (User user : friends) {
