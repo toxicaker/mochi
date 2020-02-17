@@ -1,7 +1,7 @@
 package cn.jiateng.server.handler.serivces.impl;
 
-import cn.jiateng.api.common.JsonResp;
-import cn.jiateng.api.common.MyConst;
+import cn.jiateng.common.JsonResp;
+import cn.jiateng.common.MyConst;
 import cn.jiateng.server.MochiMsgServer;
 import cn.jiateng.server.common.ServiceException;
 import cn.jiateng.server.common.Session;
@@ -9,7 +9,6 @@ import cn.jiateng.server.common.SessionManager;
 import cn.jiateng.server.handler.serivces.UserService;
 import cn.jiateng.server.utils.HttpUtil;
 import cn.jiateng.server.utils.RedisUtil;
-import cn.jiateng.zookeeper.ServiceManager;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Response;
 import io.netty.channel.ChannelHandlerContext;

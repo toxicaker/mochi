@@ -2,7 +2,7 @@ package cn.jiateng.api.services.impl;
 
 import cn.jiateng.api.Model.Group;
 import cn.jiateng.api.Model.User;
-import cn.jiateng.api.common.MyConst;
+import cn.jiateng.common.MyConst;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.dao.GroupDao;
 import cn.jiateng.api.dao.UserDao;

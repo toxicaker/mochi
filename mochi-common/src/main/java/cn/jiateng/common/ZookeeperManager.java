@@ -1,4 +1,4 @@
-package cn.jiateng.zookeeper;
+package cn.jiateng.common;
 
 
 import org.apache.zookeeper.*;

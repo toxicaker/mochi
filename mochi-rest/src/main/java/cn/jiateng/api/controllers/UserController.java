@@ -1,13 +1,10 @@
 package cn.jiateng.api.controllers;
 
 import cn.jiateng.api.Model.User;
-import cn.jiateng.api.common.JsonResp;
+import cn.jiateng.common.JsonResp;
 import cn.jiateng.api.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/api/users", produces = "application/json")

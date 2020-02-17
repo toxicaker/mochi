@@ -1,6 +1,6 @@
 package cn.jiateng.server.common;
 
-import cn.jiateng.api.common.MyConst;
+import cn.jiateng.common.MyConst;
 import cn.jiateng.server.utils.RedisUtil;
 import io.netty.channel.group.ChannelGroup;
 

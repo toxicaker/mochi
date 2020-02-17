@@ -19,7 +19,7 @@
     <modules>
         <module>mochi-rest</module>
         <module>mochi-server</module>
-        <module>mochi-zookeeper</module>
+        <module>mochi-common</module>
     </modules>
 
     <dependencies>

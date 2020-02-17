@@ -1,5 +1,6 @@
 package cn.jiateng.api.common;
 
+import cn.jiateng.common.JsonResp;
 import org.apache.log4j.Logger;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;

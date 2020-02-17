@@ -1,6 +1,6 @@
 package cn.jiateng.api.security;
 
-import cn.jiateng.api.common.JsonResp;
+import cn.jiateng.common.JsonResp;
 import cn.jiateng.api.utils.AuthUtil;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Component;

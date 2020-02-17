@@ -2,7 +2,7 @@ package cn.jiateng.api.controllers;
 
 import cn.jiateng.api.Model.Group;
 import cn.jiateng.api.Model.User;
-import cn.jiateng.api.common.JsonResp;
+import cn.jiateng.common.JsonResp;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.data.CreateGroupForm;
 import cn.jiateng.api.security.SkipAuth;

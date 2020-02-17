@@ -1,6 +1,6 @@
 package cn.jiateng.api.utils;
 
-import cn.jiateng.api.common.MyConst;
+import cn.jiateng.common.MyConst;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Component;

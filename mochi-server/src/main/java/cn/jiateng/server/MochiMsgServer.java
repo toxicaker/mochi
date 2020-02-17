@@ -3,7 +3,7 @@ package cn.jiateng.server;
 import cn.jiateng.server.common.SessionManager;
 import cn.jiateng.server.utils.PropReader;
 import cn.jiateng.server.utils.RedisUtil;
-import cn.jiateng.zookeeper.ServiceManager;
+import cn.jiateng.common.ServiceManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;

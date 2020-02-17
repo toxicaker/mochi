@@ -1,4 +1,4 @@
-package cn.jiateng.api.common;
+package cn.jiateng.common;
 
 public class MyConst {
 

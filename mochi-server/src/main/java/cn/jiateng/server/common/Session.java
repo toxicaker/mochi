@@ -2,7 +2,7 @@ package cn.jiateng.server.common;
 
 
 import cn.jiateng.server.MochiMsgServer;
-import cn.jiateng.zookeeper.ServiceManager;
+import cn.jiateng.common.ServiceManager;
 import io.netty.channel.Channel;
 
 public class Session {

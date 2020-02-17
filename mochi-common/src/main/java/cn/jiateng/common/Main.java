@@ -1,4 +1,4 @@
-package cn.jiateng.zookeeper;
+package cn.jiateng.common;
 
 public class Main {
     public static void main(String[] args){

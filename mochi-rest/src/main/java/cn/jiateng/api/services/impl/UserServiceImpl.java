@@ -1,7 +1,7 @@
 package cn.jiateng.api.services.impl;
 
 import cn.jiateng.api.Model.*;
-import cn.jiateng.api.common.MyConst;
+import cn.jiateng.common.MyConst;
 import cn.jiateng.api.common.ServiceException;
 import cn.jiateng.api.dao.*;
 import cn.jiateng.api.services.UserService;

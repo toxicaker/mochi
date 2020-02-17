@@ -1,10 +1,8 @@
-package cn.jiateng.zookeeper;
+package cn.jiateng.common;
 
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
-
-import java.util.Properties;
 
 /**
  * Service registration and discovery

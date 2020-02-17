@@ -28,7 +28,7 @@ public class AuthServiceImpl implements AuthService {
     public User signup(User user, String confirmPassword) throws ServiceException {
         User existUser = userDao.findByUsername(user.username);
         if (existUser != null) {
-            throw new ServiceException("user " + user.id + " already exists");
+            throw new ServiceException("user " + user.username + " already exists");
         }
         if (!user.password.equals(confirmPassword)) {
             throw new ServiceException("please confirm the password");
