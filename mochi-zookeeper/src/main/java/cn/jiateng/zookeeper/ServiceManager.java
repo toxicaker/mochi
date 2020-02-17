@@ -4,12 +4,16 @@ package cn.jiateng.zookeeper;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
 
+import java.util.Properties;
+
 /**
  * Service registration and discovery
  */
 public class ServiceManager {
 
-    private static ZookeeperManager zk = new ZookeeperManager("localhost", 2181);
+//    private static ZookeeperManager zk = new ZookeeperManager("localhost", 2181);
+
+    private static ZookeeperManager zk = new ZookeeperManager("10.138.15.193", 2181);
 
     public static String registerService(String serviceName, String host, String port) {
         try {

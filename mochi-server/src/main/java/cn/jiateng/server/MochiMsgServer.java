@@ -1,6 +1,7 @@
 package cn.jiateng.server;
 
 import cn.jiateng.server.common.SessionManager;
+import cn.jiateng.server.utils.PropReader;
 import cn.jiateng.server.utils.RedisUtil;
 import cn.jiateng.zookeeper.ServiceManager;
 import io.netty.bootstrap.ServerBootstrap;
@@ -25,8 +26,15 @@ public class MochiMsgServer {
 
     public static String address;
 
+    public static String env;
+
     public static void main(String[] args) throws Exception {
-        int port = 12306;
+        if (args.length >= 1 && args[1].equals("prod")) {
+            env = "prod";
+        } else {
+            env = "dev";
+        }
+        int port = Integer.parseInt(PropReader.read("server.port"));
         NioEventLoopGroup bossGroup = new NioEventLoopGroup();
         NioEventLoopGroup workerGroup = new NioEventLoopGroup();
         String ip = InetAddress.getLocalHost().getHostAddress();

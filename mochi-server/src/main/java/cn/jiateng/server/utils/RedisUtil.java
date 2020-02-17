@@ -1,17 +1,27 @@
 package cn.jiateng.server.utils;
+import redis.clients.jedis.HostAndPort;
+import redis.clients.jedis.JedisCluster;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
+import java.util.HashSet;
+import java.util.Set;
+
 
 public class RedisUtil {
 
-    private static JedisPool pool = new JedisPool(new JedisPoolConfig(), "localhost");
+    public static JedisCluster jedis;
 
-    public static Jedis jedis = pool.getResource();
+    static {
+        String address = PropReader.read("redis.cluster.nodes");
+        String[] addresses = address.split(",");
+        Set<HostAndPort> nodes = new HashSet<>();
+        for (String addr : addresses) {
+            String[] hostAndPort = addr.split(":");
+            nodes.add(new HostAndPort(hostAndPort[0], Integer.parseInt(hostAndPort[1])));
+        }
+        jedis = new JedisCluster(nodes);
+    }
 
     public static void close() {
-        pool.close();
         jedis.close();
     }
 }
