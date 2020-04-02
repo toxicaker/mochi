@@ -173,14 +173,14 @@ def get_algorithm_info(token, session):
             problem['acceptance'] = p_info['stat']['total_acs'] / float(p_info['stat']['total_submitted'])
 
             lid, desc = get_algorithm_detail(token, session, p_info['stat']['question__title_slug'])
-            problem['number'] = lid
+            problem['problemNum'] = int(lid)
             problem['content'] = desc
             exist = db.leetcode_problems.find_one({'leetCodeId': p_info['stat']['question_id']})
             if not exist:
                 db.leetcode_problems.insert(problem)
-                print('Successfully saved the question: ' + problem['number'] + ' ' + problem['title'])
+                print('Successfully saved the question: ' + str(problem['problemNum']) + ' ' + problem['title'])
             else:
-                print('Skipped the question: ' + problem['number'] + ' ' + problem['title'])
+                print('Skipped the question: ' + str(problem['problemNum']) + ' ' + problem['title'])
         except Exception as e:
             print('Failed to get algorithm question: ', e)
 
@@ -208,12 +208,5 @@ def get_tag_info(token, session):
             print('Failed to get tags info: ', e)
 
 
-get_algorithm_info('C5hDeO7Bj08cKKuozHChZ0Xq3rLxpEUvXDEmlyWuQnjXWKVcVuKGUWXTHsNAEcWc',
-                   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lk'
-                   'IjoiNzYwODQ3IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiYWxsYXV0aC5hY2NvdW50LmF1dGhfYmFja2VuZ'
-                   'HMuQXV0aGVudGljYXRpb25CYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiMWY4YTdjMTM0N2U3MGFkNTdmNjJhMjYzMzg0NmU3YWU5NT'
-                   'BkNDc4MyIsImlkIjo3NjA4NDcsImVtYWlsIjoiamlhdGVuZy5saWFuZ0BueXUuZWR1IiwidXNlcm5hbW'
-                   'UiOiJUb3hpY2FrZXIiLCJ1c2VyX3NsdWciOiJ0b3hpY2FrZXIiLCJhdmF0YXIiOiJodHRwczovL3d3dy5ncmF2YXRhc'
-                   'i5jb20vYXZhdGFyL2VlYTg5NzcyMTEwM2M3M2YyNzFmMjQ5OTM5MTYxNmRiLnBuZz9zPTIwMCIsInRpbWVzdGFtc'
-                   'CI6IjIwMjAtMDMtMjcgMTU6NDc6MDkuODU5MTU0KzAwOjAwIiwiSVAiOiI5OS4xMDUuMjEzLjgwIiwiSURF'
-                   'TlRJVFkiOiI2OTZlN2Y0NmQ1ODExMTQzNWM5MTlhNzIzNzViZTVhZSIsIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.NoxFcMhSAO3kz8u3y5VIG5TBaeRerpqSDQOT33VLNC4')
+get_algorithm_info('vtwgtUWVl9VCiDcQI0zmYtSiIdMRh8uKgA6lhuyFwnuXl8i2uQIc5WiIDLutbxsE',
+                   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiNzYwODQ3IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiYWxsYXV0aC5hY2NvdW50LmF1dGhfYmFja2VuZHMuQXV0aGVudGljYXRpb25CYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiMWY4YTdjMTM0N2U3MGFkNTdmNjJhMjYzMzg0NmU3YWU5NTBkNDc4MyIsImlkIjo3NjA4NDcsImVtYWlsIjoiamlhdGVuZy5saWFuZ0BueXUuZWR1IiwidXNlcm5hbWUiOiJUb3hpY2FrZXIiLCJ1c2VyX3NsdWciOiJ0b3hpY2FrZXIiLCJhdmF0YXIiOiJodHRwczovL3d3dy5ncmF2YXRhci5jb20vYXZhdGFyL2VlYTg5NzcyMTEwM2M3M2YyNzFmMjQ5OTM5MTYxNmRiLnBuZz9zPTIwMCIsInRpbWVzdGFtcCI6IjIwMjAtMDQtMDIgMDM6MjM6NTMuNzY1NTMwKzAwOjAwIiwiSVAiOiI5OS4xMDUuMjEzLjgwIiwiSURFTlRJVFkiOiI2OTZlN2Y0NmQ1ODExMTQzNWM5MTlhNzIzNzViZTVhZSIsIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.d-U_rCtrKyUWAadJ5K7DuH9MX4GOTAz2ZEQ4jv2h3R0')

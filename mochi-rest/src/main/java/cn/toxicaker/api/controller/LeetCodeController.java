@@ -4,14 +4,13 @@ import cn.toxicaker.api.model.LeetCodeProblem;
 import cn.toxicaker.api.security.SkipAuth;
 import cn.toxicaker.api.service.LeetCodeService;
 import cn.toxicaker.common.JsonResp;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.stream.Stream;
 
 @RestController
@@ -23,7 +22,7 @@ public class LeetCodeController {
 
     @GetMapping("/problems")
     @SkipAuth
-    public JsonResp listProblems(@RequestParam int page) {
+    public JsonResp listProblems(@RequestParam(defaultValue = "0") int page) {
         Page<LeetCodeProblem> leetCodeProblems = leetCodeService.listLeetCodeProblemsByPage(page, 20);
         Map<String, Object> res = new HashMap<>();
         res.put("page", page);
@@ -37,13 +36,43 @@ public class LeetCodeController {
     @SkipAuth
     public JsonResp getProblemById(@PathVariable String id) {
         LeetCodeProblem leetCodeProblem = leetCodeService.getLeetCodeProblemById(id);
+        if (leetCodeProblem == null) {
+            return new JsonResp(null);
+        }
         return new JsonResp(packGetProblemByIdData(leetCodeProblem));
+    }
+
+    @GetMapping("/problems/search/{keyword}")
+    @SkipAuth
+    public JsonResp searchProblems(@PathVariable String keyword, @RequestParam(defaultValue = "0") int page) {
+        Map<String, Object> obj = new HashMap<>();
+        if (StringUtils.isNumeric(keyword)) {
+            int num = Integer.parseInt(keyword);
+            LeetCodeProblem leetCodeProblem = leetCodeService.getLeetCodeProblemByNumber(num);
+            obj.put("page", 0);
+            obj.put("totalPage", 1);
+            if (leetCodeProblem == null) {
+                obj.put("totalNum", 0);
+                obj.put("data", new ArrayList<>());
+                return new JsonResp(obj);
+            } else {
+                obj.put("totalNum", 1);
+                obj.put("data", packListProblemsData(Stream.of(leetCodeProblem)));
+                return new JsonResp(obj);
+            }
+        }
+        Page<LeetCodeProblem> leetCodeProblems = leetCodeService.searchLeetCodeProblemsByTitleAndContent(keyword, page, 20);
+        obj.put("page", page);
+        obj.put("totalPage", leetCodeProblems.getTotalPages());
+        obj.put("totalNum", leetCodeProblems.getTotalElements());
+        obj.put("data", packListProblemsData(leetCodeProblems.stream()));
+        return new JsonResp(obj);
     }
 
     private Map<String, Object> packGetProblemByIdData(LeetCodeProblem problem) {
         Map<String, Object> obj = new HashMap<>();
         obj.put("id", problem.id);
-        obj.put("number", problem.number);
+        obj.put("number", problem.problemNum);
         obj.put("title", problem.title);
         obj.put("content", problem.content);
         obj.put("type", LeetCodeProblem.Type.getType(problem.type));
@@ -58,10 +87,11 @@ public class LeetCodeController {
         stream.forEach(problem -> {
             Map<String, Object> obj = new HashMap<>();
             obj.put("id", problem.id);
-            obj.put("number", problem.number);
+            obj.put("number", problem.problemNum);
             obj.put("title", problem.title);
             obj.put("type", LeetCodeProblem.Type.getType(problem.type));
-            obj.put("acceptance", problem.acceptance);
+            DecimalFormat f = new DecimalFormat("##.00");
+            obj.put("acceptance", f.format(problem.acceptance * 100) + "%");
             obj.put("difficulty", LeetCodeProblem.Difficulty.getDifficulty(problem.difficulty));
             obj.put("frequency", problem.frequency);
             res.add(obj);

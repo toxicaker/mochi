@@ -1,6 +1,4 @@
 package cn.toxicaker.api.model;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,9 +9,9 @@ public class LeetCodeProblem {
     @Id
     public String id;
 
-    public String leetCodeId;
+    public Integer leetCodeId;
 
-    public Integer number;
+    public Integer problemNum;
 
     public String title;
 

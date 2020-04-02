@@ -9,4 +9,8 @@ public interface LeetCodeService {
     Page<LeetCodeProblem> listLeetCodeProblemsByPage(int startPage, int pageSize);
 
     LeetCodeProblem getLeetCodeProblemById(String id);
+
+    Page<LeetCodeProblem> searchLeetCodeProblemsByTitleAndContent(String keyword, int startPage, int pageSize);
+
+    LeetCodeProblem getLeetCodeProblemByNumber(int num);
 }

@@ -20,7 +20,7 @@ public class LeetCodeServiceImpl implements LeetCodeService {
 
     @Override
     public Page<LeetCodeProblem> listLeetCodeProblemsByPage(int startPage, int pageSize) {
-        Pageable pageable = PageRequest.of(startPage, pageSize, Sort.Direction.ASC, "number");
+        Pageable pageable = PageRequest.of(startPage, pageSize, Sort.Direction.ASC, "problemNum");
         return leetCodeDao.findAll(pageable);
     }
 
@@ -28,5 +28,16 @@ public class LeetCodeServiceImpl implements LeetCodeService {
     public LeetCodeProblem getLeetCodeProblemById(String id) {
         Optional<LeetCodeProblem> res = leetCodeDao.findById(id);
         return res.orElse(null);
+    }
+
+    @Override
+    public Page<LeetCodeProblem> searchLeetCodeProblemsByTitleAndContent(String keyword, int startPage, int pageSize) {
+        Pageable pageable = PageRequest.of(startPage, pageSize, Sort.Direction.ASC, "problemNum");
+        return leetCodeDao.findAllByTitleOrContentRegex(keyword, pageable);
+    }
+
+    @Override
+    public LeetCodeProblem getLeetCodeProblemByNumber(int num) {
+        return leetCodeDao.findByProblemNum(num);
     }
 }

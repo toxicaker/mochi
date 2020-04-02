@@ -4,11 +4,14 @@ import cn.toxicaker.api.model.LeetCodeProblem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import java.util.Optional;
+import org.springframework.data.mongodb.repository.Query;
+
 
 public interface LeetCodeDao extends MongoRepository<LeetCodeProblem, String> {
 
-    Page<LeetCodeProblem> findAll(Pageable pageable);
+    LeetCodeProblem findByProblemNum(int number);
 
-    Optional<LeetCodeProblem> findById(String id);
+    @Query("{'$or' : [{'title' : {$regex : ?0}}, {'content' : {$regex : ?0}}]}")
+    Page<LeetCodeProblem> findAllByTitleOrContentRegex(String keyword, Pageable pageable);
+
 }
