@@ -9,6 +9,12 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface LeetCodeDao extends MongoRepository<LeetCodeProblem, String> {
 
+    Page<LeetCodeProblem> findAllByTypeAndDifficulty(boolean type, int difficulty, Pageable pageable);
+
+    Page<LeetCodeProblem> findAllByType(boolean type, Pageable pageable);
+
+    Page<LeetCodeProblem> findAllByDifficulty(int difficulty, Pageable pageable);
+
     LeetCodeProblem findByProblemNum(int number);
 
     @Query("{'$or' : [{'title' : {$regex : ?0}}, {'content' : {$regex : ?0}}]}")

@@ -19,9 +19,20 @@ public class LeetCodeServiceImpl implements LeetCodeService {
     private LeetCodeDao leetCodeDao;
 
     @Override
-    public Page<LeetCodeProblem> listLeetCodeProblemsByPage(int startPage, int pageSize) {
+    public Page<LeetCodeProblem> listLeetCodeProblemsByPage(int startPage, int pageSize, String type, String difficulty) {
         Pageable pageable = PageRequest.of(startPage, pageSize, Sort.Direction.ASC, "problemNum");
-        return leetCodeDao.findAll(pageable);
+        LeetCodeProblem.Difficulty diff = difficulty.equals("easy") ? LeetCodeProblem.Difficulty.EASY
+                : difficulty.equals("medium") ? LeetCodeProblem.Difficulty.MEDIUM : LeetCodeProblem.Difficulty.HARD;
+        LeetCodeProblem.Type t = type.equals("normal") ? LeetCodeProblem.Type.NORMAL : LeetCodeProblem.Type.PREMIUM;
+        if ("".equals(type) && "".equals(difficulty)) {
+            return leetCodeDao.findAll(pageable);
+        } else if ("".equals(type)) {
+            return leetCodeDao.findAllByDifficulty(diff.num, pageable);
+        } else if ("".equals(difficulty)) {
+            return leetCodeDao.findAllByType(t.type, pageable);
+        } else {
+            return leetCodeDao.findAllByTypeAndDifficulty(t.type, diff.num, pageable);
+        }
     }
 
     @Override

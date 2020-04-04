@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 
 public interface LeetCodeService {
 
-    Page<LeetCodeProblem> listLeetCodeProblemsByPage(int startPage, int pageSize);
+    Page<LeetCodeProblem> listLeetCodeProblemsByPage(int startPage, int pageSize, String type, String difficulty);
 
     LeetCodeProblem getLeetCodeProblemById(String id);
 

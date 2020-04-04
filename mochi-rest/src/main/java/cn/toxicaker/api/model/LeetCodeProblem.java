@@ -36,17 +36,13 @@ public class LeetCodeProblem {
         NORMAL("Normal", false),
         PREMIUM("Premium", true);
 
-        String val;
+        public String val;
 
-        boolean type;
+        public boolean type;
 
         Type(String val, boolean type) {
             this.val = val;
             this.type = type;
-        }
-
-        public String getVal() {
-            return this.val;
         }
 
         public static String getType(boolean type) {
@@ -60,9 +56,9 @@ public class LeetCodeProblem {
         MEDIUM("Medium", 2),
         HARD("Hard", 3);
 
-        String val;
+        public String val;
 
-        int num;
+        public int num;
 
         Difficulty(String val, int num) {
             this.val = val;
@@ -79,10 +75,6 @@ public class LeetCodeProblem {
                     return "Hard";
             }
             return "";
-        }
-
-        public String getVal() {
-            return this.val;
         }
     }
 }

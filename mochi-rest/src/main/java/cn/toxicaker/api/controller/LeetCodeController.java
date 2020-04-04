@@ -4,6 +4,7 @@ import cn.toxicaker.api.model.LeetCodeProblem;
 import cn.toxicaker.api.security.SkipAuth;
 import cn.toxicaker.api.service.LeetCodeService;
 import cn.toxicaker.common.JsonResp;
+import cn.toxicaker.common.ServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,8 +23,13 @@ public class LeetCodeController {
 
     @GetMapping("/problems")
     @SkipAuth
-    public JsonResp listProblems(@RequestParam(defaultValue = "0") int page) {
-        Page<LeetCodeProblem> leetCodeProblems = leetCodeService.listLeetCodeProblemsByPage(page, 20);
+    public JsonResp listProblems(@RequestParam(defaultValue = "0") int page,
+                                 @RequestParam(defaultValue = "") String type,
+                                 @RequestParam(defaultValue = "") String difficulty) throws ServiceException {
+        if (!validateDifficulty(difficulty) || !validateType(type)) {
+            throw new ServiceException("parameter type or difficulty is invalid");
+        }
+        Page<LeetCodeProblem> leetCodeProblems = leetCodeService.listLeetCodeProblemsByPage(page, 20, type, difficulty);
         Map<String, Object> res = new HashMap<>();
         res.put("page", page);
         res.put("totalPage", leetCodeProblems.getTotalPages());
@@ -31,6 +37,7 @@ public class LeetCodeController {
         res.put("data", packListProblemsData(leetCodeProblems.stream()));
         return new JsonResp(res);
     }
+
 
     @GetMapping("/problems/{id}")
     @SkipAuth
@@ -97,5 +104,19 @@ public class LeetCodeController {
             res.add(obj);
         });
         return res;
+    }
+
+    private boolean validateType(String type) {
+        if (type == null) {
+            return false;
+        }
+        return type.equals("normal") || type.equals("premium") || type.equals("");
+    }
+
+    private boolean validateDifficulty(String difficulty) {
+        if (difficulty == null) {
+            return false;
+        }
+        return difficulty.equals("easy") || difficulty.equals("medium") || difficulty.equals("hard") || difficulty.equals("");
     }
 }
