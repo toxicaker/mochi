@@ -42,10 +42,22 @@ public class LeetCodeServiceImpl implements LeetCodeService {
     }
 
     @Override
-    public Page<LeetCodeProblem> searchLeetCodeProblemsByTitleAndContent(String keyword, int startPage, int pageSize) {
+    public Page<LeetCodeProblem> searchLeetCodeProblemsByTitleAndContent(int startPage, int pageSize, String keyword, String type, String difficulty) {
         Pageable pageable = PageRequest.of(startPage, pageSize, Sort.Direction.ASC, "problemNum");
-        return leetCodeDao.findAllByTitleOrContentRegex(keyword, pageable);
+        LeetCodeProblem.Difficulty diff = difficulty.equals("easy") ? LeetCodeProblem.Difficulty.EASY
+                : difficulty.equals("medium") ? LeetCodeProblem.Difficulty.MEDIUM : LeetCodeProblem.Difficulty.HARD;
+        LeetCodeProblem.Type t = type.equals("normal") ? LeetCodeProblem.Type.NORMAL : LeetCodeProblem.Type.PREMIUM;
+        if ("".equals(type) && "".equals(difficulty)) {
+            return leetCodeDao.findAllByTitleOrContentRegex(keyword, pageable);
+        } else if ("".equals(type)) {
+            return leetCodeDao.findAllByTitleOrContentRegexAndDifficulty(keyword, diff.num, pageable);
+        } else if ("".equals(difficulty)) {
+            return leetCodeDao.findAllByTitleOrContentRegexAndType(keyword, t.type, pageable);
+        } else {
+            return leetCodeDao.findAllByTitleOrContentRegexAndTypeAndDifficulty(keyword, t.type, diff.num, pageable);
+        }
     }
+
 
     @Override
     public LeetCodeProblem getLeetCodeProblemByNumber(int num) {

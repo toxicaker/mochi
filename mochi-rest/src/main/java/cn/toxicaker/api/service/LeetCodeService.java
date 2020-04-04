@@ -10,7 +10,7 @@ public interface LeetCodeService {
 
     LeetCodeProblem getLeetCodeProblemById(String id);
 
-    Page<LeetCodeProblem> searchLeetCodeProblemsByTitleAndContent(String keyword, int startPage, int pageSize);
+    Page<LeetCodeProblem> searchLeetCodeProblemsByTitleAndContent(int startPage, int pageSize, String keyword, String type, String difficulty);
 
     LeetCodeProblem getLeetCodeProblemByNumber(int num);
 }

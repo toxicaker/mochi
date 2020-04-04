@@ -51,7 +51,10 @@ public class LeetCodeController {
 
     @GetMapping("/problems/search/{keyword}")
     @SkipAuth
-    public JsonResp searchProblems(@PathVariable String keyword, @RequestParam(defaultValue = "0") int page) {
+    public JsonResp searchProblems(@PathVariable String keyword,
+                                   @RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "") String type,
+                                   @RequestParam(defaultValue = "") String difficulty) throws ServiceException {
         Map<String, Object> obj = new HashMap<>();
         if (StringUtils.isNumeric(keyword)) {
             int num = Integer.parseInt(keyword);
@@ -68,7 +71,10 @@ public class LeetCodeController {
                 return new JsonResp(obj);
             }
         }
-        Page<LeetCodeProblem> leetCodeProblems = leetCodeService.searchLeetCodeProblemsByTitleAndContent(keyword, page, 20);
+        if (!validateDifficulty(difficulty) || !validateType(type)) {
+            throw new ServiceException("parameter type or difficulty is invalid");
+        }
+        Page<LeetCodeProblem> leetCodeProblems = leetCodeService.searchLeetCodeProblemsByTitleAndContent(page, 20, keyword, type, difficulty);
         obj.put("page", page);
         obj.put("totalPage", leetCodeProblems.getTotalPages());
         obj.put("totalNum", leetCodeProblems.getTotalElements());

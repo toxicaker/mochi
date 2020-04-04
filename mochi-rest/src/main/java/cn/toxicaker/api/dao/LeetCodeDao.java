@@ -17,7 +17,16 @@ public interface LeetCodeDao extends MongoRepository<LeetCodeProblem, String> {
 
     LeetCodeProblem findByProblemNum(int number);
 
-    @Query("{'$or' : [{'title' : {$regex : ?0}}, {'content' : {$regex : ?0}}]}")
+    @Query("{$or : [{'title' : {$regex : ?0, $options : 'i'}}, {'content' : {$regex : ?0, $options : 'i'}}]}")
     Page<LeetCodeProblem> findAllByTitleOrContentRegex(String keyword, Pageable pageable);
+
+    @Query("{$and: [{$or : [{title : {$regex : ?0, $options : 'i'}}, {content : {$regex : ?0, $options : 'i'}}]}, {type: ?1}]}")
+    Page<LeetCodeProblem> findAllByTitleOrContentRegexAndType(String keyword, boolean type, Pageable pageable);
+
+    @Query("{$and: [{$or : [{title : {$regex : ?0, $options : 'i'}}, {content : {$regex : ?0, $options : 'i'}}]}, {difficulty: ?1}]}")
+    Page<LeetCodeProblem> findAllByTitleOrContentRegexAndDifficulty(String keyword, int difficulty, Pageable pageable);
+
+    @Query("{$and: [{$or : [{title : {$regex : ?0, $options : 'i'}}, {content : {$regex : ?0, $options : 'i'}}]}, {type: ?1}, {difficulty: ?2}]}")
+    Page<LeetCodeProblem> findAllByTitleOrContentRegexAndTypeAndDifficulty(String keyword, boolean type, int difficulty, Pageable pageable);
 
 }
