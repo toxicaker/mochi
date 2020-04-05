@@ -203,10 +203,19 @@ def get_tag_info(token, session):
     topics = json_map['topics']
     for topic in topics:
         try:
-            print(topic['name'], topic['slug'], topic['questions'])
+            tag = {'name': topic['name'], 'slug': topic['slug'], 'leetCodeIds': topic['questions']}
+            exist = db.leetcode_tags.find_one({'name': topic['name']})
+            if not exist:
+                db.leetcode_tags.insert(tag)
+                print('Successfully saved the tag: ' + str(tag))
+            else:
+                db.leetcode_tags.update({'name': topic['name']}, tag)
+                print('Successfully updated the tag: ' + str(tag))
         except Exception as e:
             print('Failed to get tags info: ', e)
 
 
-get_algorithm_info('vtwgtUWVl9VCiDcQI0zmYtSiIdMRh8uKgA6lhuyFwnuXl8i2uQIc5WiIDLutbxsE',
-                   'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiNzYwODQ3IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiYWxsYXV0aC5hY2NvdW50LmF1dGhfYmFja2VuZHMuQXV0aGVudGljYXRpb25CYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiMWY4YTdjMTM0N2U3MGFkNTdmNjJhMjYzMzg0NmU3YWU5NTBkNDc4MyIsImlkIjo3NjA4NDcsImVtYWlsIjoiamlhdGVuZy5saWFuZ0BueXUuZWR1IiwidXNlcm5hbWUiOiJUb3hpY2FrZXIiLCJ1c2VyX3NsdWciOiJ0b3hpY2FrZXIiLCJhdmF0YXIiOiJodHRwczovL3d3dy5ncmF2YXRhci5jb20vYXZhdGFyL2VlYTg5NzcyMTEwM2M3M2YyNzFmMjQ5OTM5MTYxNmRiLnBuZz9zPTIwMCIsInRpbWVzdGFtcCI6IjIwMjAtMDQtMDIgMDM6MjM6NTMuNzY1NTMwKzAwOjAwIiwiSVAiOiI5OS4xMDUuMjEzLjgwIiwiSURFTlRJVFkiOiI2OTZlN2Y0NmQ1ODExMTQzNWM5MTlhNzIzNzViZTVhZSIsIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.d-U_rCtrKyUWAadJ5K7DuH9MX4GOTAz2ZEQ4jv2h3R0')
+
+
+get_tag_info('vtwgtUWVl9VCiDcQI0zmYtSiIdMRh8uKgA6lhuyFwnuXl8i2uQIc5WiIDLutbxsE',
+             'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfYXV0aF91c2VyX2lkIjoiNzYwODQ3IiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiYWxsYXV0aC5hY2NvdW50LmF1dGhfYmFja2VuZHMuQXV0aGVudGljYXRpb25CYWNrZW5kIiwiX2F1dGhfdXNlcl9oYXNoIjoiMWY4YTdjMTM0N2U3MGFkNTdmNjJhMjYzMzg0NmU3YWU5NTBkNDc4MyIsImlkIjo3NjA4NDcsImVtYWlsIjoiamlhdGVuZy5saWFuZ0BueXUuZWR1IiwidXNlcm5hbWUiOiJUb3hpY2FrZXIiLCJ1c2VyX3NsdWciOiJ0b3hpY2FrZXIiLCJhdmF0YXIiOiJodHRwczovL3d3dy5ncmF2YXRhci5jb20vYXZhdGFyL2VlYTg5NzcyMTEwM2M3M2YyNzFmMjQ5OTM5MTYxNmRiLnBuZz9zPTIwMCIsInRpbWVzdGFtcCI6IjIwMjAtMDQtMDIgMDM6MjM6NTMuNzY1NTMwKzAwOjAwIiwiSVAiOiI5OS4xMDUuMjEzLjgwIiwiSURFTlRJVFkiOiI2OTZlN2Y0NmQ1ODExMTQzNWM5MTlhNzIzNzViZTVhZSIsIl9zZXNzaW9uX2V4cGlyeSI6MTIwOTYwMH0.d-U_rCtrKyUWAadJ5K7DuH9MX4GOTAz2ZEQ4jv2h3R0')

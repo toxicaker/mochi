@@ -1,6 +1,7 @@
 package cn.toxicaker.api.controller;
 
 import cn.toxicaker.api.model.LeetCodeProblem;
+import cn.toxicaker.api.model.LeetCodeTag;
 import cn.toxicaker.api.security.SkipAuth;
 import cn.toxicaker.api.service.LeetCodeService;
 import cn.toxicaker.common.JsonResp;
@@ -36,6 +37,30 @@ public class LeetCodeController {
         res.put("totalNum", leetCodeProblems.getTotalElements());
         res.put("data", packListProblemsData(leetCodeProblems.stream()));
         return new JsonResp(res);
+    }
+
+    @GetMapping("/tags")
+    @SkipAuth
+    public JsonResp listTags() {
+        List<LeetCodeTag> leetCodeTags = leetCodeService.listTags();
+        List<Map<String, Object>> res = new ArrayList<>();
+        for (LeetCodeTag leetCodeTag : leetCodeTags) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("id", leetCodeTag.id);
+            map.put("name", leetCodeTag.name);
+            map.put("slug", leetCodeTag.slug);
+            map.put("size", leetCodeTag.leetCodeIds.size());
+            res.add(map);
+        }
+        return new JsonResp(res);
+    }
+
+    @GetMapping("/tags/{tagId}/problems")
+    @SkipAuth
+    public JsonResp listProblemsByTag(@PathVariable String tagId) {
+        List<LeetCodeProblem> leetCodeProblems = leetCodeService.listLeetCodeProblemsByTagId(tagId);
+        leetCodeProblems.sort(Comparator.comparing(i -> i.problemNum));
+        return new JsonResp(packListProblemsData(leetCodeProblems.stream()));
     }
 
 

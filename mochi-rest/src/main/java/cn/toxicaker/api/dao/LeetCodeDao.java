@@ -17,6 +17,8 @@ public interface LeetCodeDao extends MongoRepository<LeetCodeProblem, String> {
 
     LeetCodeProblem findByProblemNum(int number);
 
+    LeetCodeProblem findByLeetCodeId(int leetCodeId);
+
     @Query("{$or : [{'title' : {$regex : ?0, $options : 'i'}}, {'content' : {$regex : ?0, $options : 'i'}}]}")
     Page<LeetCodeProblem> findAllByTitleOrContentRegex(String keyword, Pageable pageable);
 

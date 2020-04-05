@@ -1,7 +1,9 @@
 package cn.toxicaker.api.service.impl;
 
 import cn.toxicaker.api.dao.LeetCodeDao;
+import cn.toxicaker.api.dao.LeetCodeTagDao;
 import cn.toxicaker.api.model.LeetCodeProblem;
+import cn.toxicaker.api.model.LeetCodeTag;
 import cn.toxicaker.api.service.LeetCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,6 +21,9 @@ public class LeetCodeServiceImpl implements LeetCodeService {
 
     @Autowired
     private LeetCodeDao leetCodeDao;
+
+    @Autowired
+    private LeetCodeTagDao leetCodeTagDao;
 
     @Override
     public Page<LeetCodeProblem> listLeetCodeProblemsByPage(int startPage, int pageSize, String type, String difficulty) {
@@ -62,5 +69,26 @@ public class LeetCodeServiceImpl implements LeetCodeService {
     @Override
     public LeetCodeProblem getLeetCodeProblemByNumber(int num) {
         return leetCodeDao.findByProblemNum(num);
+    }
+
+    @Override
+    public List<LeetCodeProblem> listLeetCodeProblemsByTagId(String tagId) {
+        Optional<LeetCodeTag> leetCodeTag = leetCodeTagDao.findById(tagId);
+        List<LeetCodeProblem> res = new ArrayList<>();
+        if (!leetCodeTag.isPresent()) {
+            return res;
+        }
+        for (int id : leetCodeTag.get().leetCodeIds) {
+            LeetCodeProblem problem = leetCodeDao.findByLeetCodeId(id);
+            if (problem != null) {
+                res.add(problem);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<LeetCodeTag> listTags() {
+        return leetCodeTagDao.findAll();
     }
 }
