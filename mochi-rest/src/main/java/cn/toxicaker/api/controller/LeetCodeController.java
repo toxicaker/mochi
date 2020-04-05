@@ -117,6 +117,7 @@ public class LeetCodeController {
         obj.put("acceptance", problem.acceptance);
         obj.put("difficulty", LeetCodeProblem.Difficulty.getDifficulty(problem.difficulty));
         obj.put("frequency", problem.frequency);
+        obj.put("tags", problem.tags);
         return obj;
     }
 

@@ -29,7 +29,7 @@ public class LeetCodeProblem {
 
     public List<String> companyTags;
 
-    public List<String> tags;
+    public List<LeetCodeTag> tags;
 
     public enum Type {
 

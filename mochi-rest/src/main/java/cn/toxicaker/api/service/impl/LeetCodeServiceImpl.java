@@ -45,7 +45,12 @@ public class LeetCodeServiceImpl implements LeetCodeService {
     @Override
     public LeetCodeProblem getLeetCodeProblemById(String id) {
         Optional<LeetCodeProblem> res = leetCodeDao.findById(id);
-        return res.orElse(null);
+        if(!res.isPresent()){
+            return null;
+        }
+        LeetCodeProblem leetCodeProblem = res.get();
+        leetCodeProblem.tags = leetCodeTagDao.findByLeetCodeIdsIn(leetCodeProblem.leetCodeId);
+        return leetCodeProblem;
     }
 
     @Override
